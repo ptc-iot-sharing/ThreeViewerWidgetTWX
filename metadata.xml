@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><Entities>
+  <ExtensionPackages>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx RO Tech Sales" packageVersion="0.0.1" minimumThingWorxVersion="6.0.0"/>
+  </ExtensionPackages>
+  <Widgets>
+    <Widget name="ThreeModelViewer">
+      <UIResources>
+        <FileResource type="JS" file="ThreeModelViewer.ide.js" description="" isDevelopment="true" isRuntime="false"/>
+        <FileResource type="CSS" file="ThreeModelViewer.ide.css" description="" isDevelopment="true" isRuntime="false"/>
+        <FileResource type="JS" file="ThreeModelViewer.runtime.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="CSS" file="ThreeModelViewer.runtime.css" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="three.min.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="MTLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="OBJLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="OrbitControls.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="Detector.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="CVThreeLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+      </UIResources>
+    </Widget>
+  </Widgets>
+</Entities>
