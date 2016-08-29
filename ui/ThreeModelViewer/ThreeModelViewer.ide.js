@@ -1,12 +1,12 @@
 TW.IDE.Widgets.ThreeModelViewer = function() {
 
     this.widgetIconUrl = function() {
-        return  "../Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/ThreeModelViewer.png";
+        return "../Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/ThreeModelViewer.png";
     };
     this.widgetProperties = function() {
         return {
-            'name': 'IotKit Viewer Widget',
-            'description': 'IotKit widget',
+            'name': 'Three Model Viewer',
+            'description': 'Three Js based 3d Model viewr',
             'category': ['Common'],
             'iconImage': 'ThreeModelViewer.png',
             'isExtension': true,
@@ -33,32 +33,46 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'isBindingTarget': false
                 },
                 'Pitch': {
-                    'description': 'Pitch of the Box',
+                    'description': 'Pitch of the Model',
                     'baseType': 'NUMBER',
                     'isVisible': true,
                     'defaultValue': 0.0,
                     'isBindingTarget': true
                 },
                 'Roll': {
-                    'description': 'Roll of the Box',
+                    'description': 'Roll of the Model',
                     'baseType': 'NUMBER',
                     'isVisible': true,
                     'defaultValue': 0.0,
                     'isBindingTarget': true
                 },
                 'Heading': {
-                    'description': 'Heading of the Box',
+                    'description': 'Heading of the Model',
                     'baseType': 'NUMBER',
                     'isVisible': true,
                     'defaultValue': 0.0,
                     'isBindingTarget': true
-                } ,
+                },
+                'ModelUrl': {
+                    'description': 'URL to the model',
+                    'baseType': 'STRING',
+                    'isVisible': true,
+                    'defaultValue': 0.0,
+                    'isBindingTarget': true
+                },
+                'ModelType': {
+                    'description': 'Type of the model (filename)',
+                    'baseType': 'STRING',
+                    'isVisible': true,
+                    'defaultValue': 0.0,
+                    'isBindingTarget': true
+                },
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
                     'description': 'The background, foreground and text size of the widget'
                 }
-// add any additional properties here
+                // add any additional properties here
             }
         };
     };

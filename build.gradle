@@ -4,6 +4,7 @@ import org.apache.http.entity.mime.content.FileBody
 import groovyx.net.http.HTTPBuilder
 import static groovyx.net.http.Method.*
 import static groovyx.net.http.ContentType.*
+import groovy.io.FileType
 
 buildscript {
    repositories {
@@ -30,6 +31,7 @@ project.ext {
 
 task increaseVersionNumber() {
   doLast {
+      //getWidgetList()
     def file = "${baseDir}/metadata.xml"
     def parser = new groovy.util.XmlParser(false,true);
     def xml = parser.parse(file)
@@ -55,7 +57,39 @@ task increaseVersionNumber() {
   }
 }
 
-task prepPackage(dependsOn: increaseVersionNumber) {
+def getWidgetList() {
+    def file = "${baseDir}/metadata.xml"
+    def parser = new groovy.util.XmlParser(false,true);
+    def xml = parser.parse(file)
+
+    xml.Widgets.Widget.each { widget ->
+        println "Found widget: ${widget.@name}"
+        def list = []
+
+        def dir = new File("${project.ext.uiDir}/${widget.@name}")
+        dir.eachFileRecurse (FileType.FILES) { file3 ->
+             widget.UIResources[0]?.appendNode(
+                "FileResource",
+                [type: "JS", file: file3, description:"", isDevelopment:"false", isRuntime:"true"]
+        )
+        }
+
+    }
+     PrintWriter pw = new PrintWriter(new File(file))
+    pw.write(groovy.xml.XmlUtil.serialize(xml))
+    pw.close()
+}
+
+task generateUiMetadata(dependsOn: increaseVersionNumber) {
+    def list = []
+
+    def dir = new File("${project.ext.uiDir}")
+    dir.eachFileRecurse (FileType.FILES) { file ->
+        list << file
+    }
+}
+
+task prepPackage(dependsOn: generateUiMetadata) {
     doLast {
         delete project.ext.zipDir
         // add the configuration

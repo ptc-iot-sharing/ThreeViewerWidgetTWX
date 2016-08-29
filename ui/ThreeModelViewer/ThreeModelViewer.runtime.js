@@ -1,7 +1,72 @@
+TW.log.ceva = TW.log.error;
+TW.log.error = function(err) {
+    console.error(err);
+    TW.log.ceva(err);
+};
 TW.Runtime.Widgets.ThreeModelViewer = function() {
     var thisWidget = this;
     var controls;
     var renderer;
+    var scene;
+    // since we can rotate the mode, expose the pivot and camera target to the function
+    var pivot;
+    var cameraTarget;
+    var camera;
+    var loader = new Loader(thisWidget);
+    
+    this.addLights = function () {
+        /// ambient light
+        var ambientLight = new THREE.AmbientLight(0x404040); //, 0.8);
+        scene.add(ambientLight);
+        //
+
+        /// FROM PREVEW3d
+        var directionalLight = new THREE.DirectionalLight(0xa6a6a6, 1);
+        directionalLight.position.set(0, 1, 0);
+
+        var dl1 = new THREE.DirectionalLight(0xa6a6a6, 0.8);
+        var dl2 = dl1.clone();
+        var dl3 = dl1.clone();
+        var dl4 = dl1.clone();
+        // dl1.layers.mask = dl2.layers.mask = dl3.layers.mask = dl4.layers.mask = 0xff;
+
+        dl1.position.set(0, 0, -1);
+        dl2.position.set(0, 0, 1);
+        dl3.position.set(1, 0, 0);
+        dl4.position.set(-1, 0, 0);
+        scene.add(directionalLight, dl1, dl2, dl3, dl4);
+    };
+
+
+    this.addObjectCommand = function(model) {
+        //thisWidget.clearScene();
+
+        scene.add(model);
+        // scale it up, since the original model is really small
+        //model.scale.set(100, 100, 100);
+        var bbox = new THREE.Box3().setFromObject(model);
+        // make sure that the bbox is not infinity
+        if (isFinite(bbox.max.length())) {
+            bbox.center(model.position); // this re-sets the model position
+            model.position.multiplyScalar(-1);
+            model.position.y = -bbox.min.y;
+            pivot.add(model);
+            cameraTarget.y = (bbox.max.y - bbox.min.y) / 2;
+            var cameraPos = bbox.max.clone();
+            // this is a bit of a hack. But it moves the camera 2.5 times the vector away to the max bbox
+            cameraPos.setLength(cameraPos.length() * 2.5);
+            camera.position.copy(cameraPos);
+        } else {
+            console.error("Failed to set camera position. Bounding box was infinity");
+        }
+        console.log("Changed model");
+    };
+
+    this.setSceneCommand = function(sceneObject) {
+        scene = sceneObject;
+      thisWidget.addLights();
+        console.log("Changed Scene");
+    };
 
     function rgba2hex(rgb) {
         rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)(\s|,)*(([0-9]*[.])?[0-9]+)?/i);
@@ -20,12 +85,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
     this.afterRender = function() {
         if (!Detector.webgl) Detector.addGetWebGLMessage();
 
-        var cameraTarget;
-        var model;
-
         var canvas = this.jqElement.find("canvas").get(0);
 
-        var scene = new THREE.Scene();
+        scene = new THREE.Scene();
         renderer = new THREE.WebGLRenderer({
             antialias: true,
             canvas: canvas,
@@ -33,7 +95,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         });
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
-        var camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
 
         function onResize(element, callback) {
             var height = element.clientHeight;
@@ -88,37 +150,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         scene.add(group);
 
         // Lights
-        var addShadowedLight = function(x, y, z, color, intensity) {
-            var directionalLight = new THREE.PointLight(color, intensity);
-            directionalLight.position.set(x, y, z);
-            scene.add(directionalLight);
-            directionalLight.castShadow = true;
-            var d = 1;
-
-        };
-
-        /// ambient light
-        var ambientLight = new THREE.AmbientLight(0x404040); //, 0.8);
-        scene.add(ambientLight);
-        //
-
-        /// FROM PREVEW3d
-        // _scene.add(new THREE.AmbientLight(0x404040));
-        var directionalLight = new THREE.DirectionalLight(0xa6a6a6, 1);
-        directionalLight.position.set(0, 1, 0);
-
-        var dl1 = new THREE.DirectionalLight(0xa6a6a6, 0.8);
-        var dl2 = dl1.clone();
-        var dl3 = dl1.clone();
-        var dl4 = dl1.clone();
-        // dl1.layers.mask = dl2.layers.mask = dl3.layers.mask = dl4.layers.mask = 0xff;
-
-        dl1.position.set(0, 0, -1);
-        dl2.position.set(0, 0, 1);
-        dl3.position.set(1, 0, 0);
-        dl4.position.set(-1, 0, 0);
-        scene.add(directionalLight, dl1, dl2, dl3, dl4);
-
+        thisWidget.addLights();
 
         /// helpers, backgroup grids, axes
         var helper = new THREE.GridHelper(12, 2.0); // originally 4, 0.5
@@ -130,135 +162,18 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         camera.position.z = 4;
         camera.position.y = 12;
         camera.position.x = 7;
-        var pivot = new THREE.Group();
+        pivot = new THREE.Group();
+        scene.add(pivot);
 
-        function loadFile(file, successCallback, failCallback) {
-            try {
-                var createhierarchy = true;
-                CVThreeLoader.LoadModel(file, function(obj) {
-                        successCallback(obj);
-                    },
-                    function(obj) {
-                        if (failCallback) failCallback();
-                    },
-                    createhierarchy);
-            } catch (e) {
-                console.error('CVThreeLoader::LoadModel failed. Error: %o', e);
-                if (failCallback) failCallback();
-            } finally {
-
-            }
-        }
-
-        var localSuccessCallBack = function(model) {
-            scene.add(model);
-            // scale it up, since the original model is really small
-            model.scale.set(100, 100, 100);
-            var bbox = new THREE.Box3().setFromObject(model);
-            bbox.center(model.position); // this re-sets the model position
-            model.position.multiplyScalar(-1);
-            model.position.y = -bbox.min.y;
-            scene.add(pivot);
-            pivot.add(model);
-            cameraTarget.y = (bbox.max.y - bbox.min.y) / 2;
-        };
-        // wait a bit because we can get a error Assertion failed: you need to wait for the runtime to be ready (e.g. wait for main() to be called)
-
-        if (window.cvApiInited) {
-            setTimeout(function() {
-                loadFile("/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/iotKit.pvz", localSuccessCallBack, function() {
-                    alert("Failed to load the PVZ");
-                });
-            }, 200);
-        } else {
-            CVThreeLoader.Init('/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/', function() {
-                console.log('CVThreeLoader Ready');
-                window.cvApiInited = true;
-
-                setTimeout(function() {
-                    loadFile("/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/iotKit.pvz", localSuccessCallBack, function() {
-                        alert("Failed to load the PVZ");
-                    });
-                }, 200);
-
-            });
-        }
-
-
-
-        // USING mtl+obj 
-        /*var mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setPath("/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/");
-        mtlLoader.load('iotKit.mtl', function(materials) {
-
-            materials.preload();
-
-            var objLoader = new THREE.OBJLoader();
-            objLoader.setMaterials(materials);
-            objLoader.setPath("/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/");
-            objLoader.load('iotKit.obj', function(object) {
-
-                scene.add(object);
-                model = object;
-                var bbox = new THREE.Box3().setFromObject(object);
-                bbox.center(model.position); // this re-sets the model position
-                model.position.multiplyScalar(-1);
-                model.position.y = -bbox.min.y;
-                scene.add(pivot);
-                pivot.add(model);
-                cameraTarget.y = (bbox.max.y - bbox.min.y) / 2;
-            });
-
-        });*/
-        /*
-        // COLLADA LOADER
-        var loader = new THREE.ColladaLoader();
-        loader.load( '/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/iotKit.dae', function ( object ) {
-                object = object.scene;
-				scene.add(object);
-                model = object;
-                var bbox = new THREE.Box3().setFromObject(object);
-                bbox.center(model.position); // this re-sets the model position
-                model.position.multiplyScalar(-1);
-                model.position.y = -bbox.min.y;
-                debugger;
-                scene.add(pivot);
-                pivot.add(model);
-                cameraTarget.y = (bbox.max.y - bbox.min.y)/2;
-
-			} );*/
-
-        // CTM version
-        /* var loader = new THREE.CTMLoader();
-        loader.load("/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/iotKit.ctm", function(geometries, materials) {
-            debugger;
-            var material = new THREE.MeshPhongMaterial();
-
-            var object = new THREE.Mesh(geometries, material);
-            scene.add(object);
-            model = object;
-            var bbox = new THREE.Box3().setFromObject(object);
-            bbox.center(model.position); // this re-sets the model position
-            model.position.multiplyScalar(-1);
-            model.position.y = 0;
-            debugger;
-            scene.add(pivot);
-            pivot.add(model);
-            cameraTarget.y = (bbox.max.y - bbox.min.y) / 2;
-
-        }, {
-            useWorker: false
-        });
-*/
         var render = function() {
             requestAnimationFrame(render);
             controls.target = cameraTarget;
             controls.update();
             if (pivot) {
-                var rot = new THREE.Vector3(-thisWidget.getProperty('Roll'), thisWidget.getProperty('Heading') - 180, -thisWidget.getProperty('Pitch'));
-                rot.multiplyScalar(Math.PI / 180);
-                pivot.rotation.order = "YXZ";
-                pivot.rotation.setFromVector3(rot);
+                /* var rot = new THREE.Vector3(-thisWidget.getProperty('Roll'), thisWidget.getProperty('Heading') - 180, -thisWidget.getProperty('Pitch'));
+                 rot.multiplyScalar(Math.PI / 180);
+                 pivot.rotation.order = "YXZ";
+                 pivot.rotation.setFromVector3(rot);*/
             }
             renderer.render(scene, camera);
         };
@@ -274,6 +189,16 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             if (thisWidget.BackgroundStyle.backgroundColor) {
                 renderer.setClearColor(thisWidget.BackgroundStyle.backgroundColor);
             }
+        }
+        if (updatePropertyInfo.TargetProperty === "ModelUrl") {
+            loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue);
+        }
+    };
+
+    this.clearScene = function() {
+        for (var i = scene.children.length - 1; i >= 0; i--) {
+            obj = scene.children[i];
+            scene.remove(obj);
         }
     };
 
