@@ -13,11 +13,6 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
             'supportsAutoResize': true,
             'isResizable': true,
             'properties': {
-                'DisplayText': {
-                    'baseType': 'STRING',
-                    'defaultValue': 'default text',
-                    'isBindingTarget': false
-                },
                 'Width': {
                     'description': 'Total width of the widget',
                     'baseType': 'NUMBER',
@@ -67,6 +62,20 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'defaultValue': 0.0,
                     'isBindingTarget': true
                 },
+                'DrawAxisHelpers': {
+                    'description': 'Draw Axis Helpers on the ground',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': true,
+                    'isBindingTarget': true
+                },
+                'ResetSceneOnModelChange': {
+                    'description': 'Reset the scene whenever the model changes',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': true,
+                    'isBindingTarget': true
+                },
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
@@ -78,7 +87,6 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
     };
 
     this.renderHtml = function() {
-        var html = '<div class="widget-content" style="background-color:#dceaf8" >';
-        return html;
+        return '<div class="widget-content widget-model-viewer"></div>';
     };
 };

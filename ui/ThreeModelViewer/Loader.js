@@ -11,7 +11,6 @@ var Loader = function(widget) {
 	this.loadFile = function(filename, url, callback) {
 
 		var extension = url.split('.').pop().split(/\#|\?/)[0].toLowerCase();
-		debugger;
 		switch (extension) {
 			case 'amf':
 				new THREE.AMFLoader().load(url, function(model) {

@@ -1,5 +1,7 @@
-#mashup-ide .widget-ThreeModelViewer .widget-ThreeModelViewer-item{
-   margin-bottom: 5px;
-   position: relative;
-   line-height: normal;
+.widget-model-viewer {
+    background-color: #C0C0C0;
+    background-image: url(ThreeModelViewer.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 60px 60px;
 }

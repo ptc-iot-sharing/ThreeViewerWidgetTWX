@@ -32,10 +32,12 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         // Lights
         thisWidget.addLights();
 
-        /// helpers, backgroup grids, axes
-        var helper = new THREE.GridHelper(20, 10); // originally 4, 0.5
-        var axes = new THREE.AxisHelper(8);
-        group.add(helper);
+        if (thisWidget.getProperty("DrawAxisHelpers")) {
+            /// helpers, backgroup grids, axes
+            var helper = new THREE.GridHelper(20, 10); // originally 4, 0.5
+            var axes = new THREE.AxisHelper(8);
+            group.add(helper);
+        }
 
 
         cameraTarget = new THREE.Vector3();
@@ -77,17 +79,16 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
      * Adds a new object to the scene. It first attempts to place it in the origin, then positions the camera in its best position to view it
      */
     this.addObjectCommand = function(model) {
-        //thisWidget.clearScene();
-        if (!defaultScene) {
+        if (!defaultScene || thisWidget.getProperty("ResetSceneOnModelChange")) {
             thisWidget.initializeScene();
         }
         var bbox = new THREE.Box3().setFromObject(model);
         // if the model is a bit too big or too small, we'll try to scale it a bit.
         // this means scaling a model of a bbox of 600 down by 0.05
-        var scaleVector = new THREE.Vector3(1,1,1);
-        scaleVector.setLength(30/bbox.max.length());
+        var scaleVector = new THREE.Vector3(1, 1, 1);
+        scaleVector.setLength(30 / bbox.max.length());
         model.scale.copy(scaleVector);
-            // recompute the bbox after scaling
+        // recompute the bbox after scaling
         bbox = new THREE.Box3().setFromObject(model);
 
         // make sure that the bbox is not infinity
