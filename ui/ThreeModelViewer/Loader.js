@@ -10,24 +10,24 @@ var Loader = function(widget) {
 
 	this.loadFile = function(filename, url, callback) {
 
-		var extension = filename.split('.').pop().toLowerCase();
-debugger;
+		var extension = url.split('.').pop().split(/\#|\?/)[0].toLowerCase();
+		debugger;
 		switch (extension) {
 			case 'amf':
 				new THREE.AMFLoader().load(url, function(model) {
-					widget.addObjectCommand(model);
+					callback ? callback() : widget.addObjectCommand(model);
 				});
 				break;
 
 			case 'awd':
 				new THREE.AWDLoader().load(url, function(scene) {
-					widget.setSceneCommand(scene);
+					callback ? callback() : widget.setSceneCommand(scene, true);
 				});
 				break;
 
 			case 'babylon':
 				new THREE.BabylonLoader().load(url, function(scene) {
-					widget.setSceneCommand(scene);
+					callback ? callback() : widget.setSceneCommand(scene, true);
 				});
 
 				break;
@@ -44,7 +44,7 @@ debugger;
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = filename;
 
-					widget.addObjectCommand(mesh);
+					callback ? callback() : widget.addObjectCommand(mesh);
 				});
 
 				break;
@@ -58,28 +58,28 @@ debugger;
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = filename;
 
-					widget.addObjectCommand(mesh);
+					callback ? callback() : widget.addObjectCommand(mesh);
 				});
 
 				break;
 
 			case 'dae':
 				new THREE.ColladaLoader().load(url, function(collada) {
-					widget.addObjectCommand(collada.scene);
+					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
 				break;
 
 			case 'fbx':
 				new THREE.FBXLoader().load(url, function(model) {
-					widget.addObjectCommand(model);
+					callback ? callback() : widget.addObjectCommand(model);
 				});
 
 				break;
 
 			case 'gltf':
 				new THREE.glTFLoader().load(url, function(collada) {
-					widget.addObjectCommand(collada.scene);
+					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
 				break;
@@ -92,9 +92,7 @@ debugger;
 			case '3obj':
 			case '3scn':
 
-				reader.addEventListener('load', function(event) {
-
-					var contents = event.target.result;
+				new THREE.XHRLoader().load(url, function name(contents) {
 
 					// 2.0
 
@@ -137,17 +135,16 @@ debugger;
 
 					}
 
-					handleJSON(data, file, filename);
+					handleJSON(data, filename);
 
-				}, false);
-				reader.readAsText(file);
+				});
 
 				break;
 
 
 			case 'kmz':
 				new THREE.KMZLoader().load(url, function(collada) {
-					widget.addObjectCommand(collada.scene);
+					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
 				break;
@@ -163,14 +160,14 @@ debugger;
 					mesh.mixer = new THREE.AnimationMixer(mesh);
 					mesh.name = filename;
 
-					widget.addObjectCommand(mesh);
+					callback ? callback() : widget.addObjectCommand(mesh);
 				});
 
 				break;
 
 			case 'obj':
 				new THREE.OBJLoader().load(url, function(object) {
-					widget.addObjectCommand(object);
+					callback ? callback() : widget.addObjectCommand(object);
 				});
 
 
@@ -178,7 +175,7 @@ debugger;
 
 			case 'playcanvas':
 				new THREE.PlayCanvasLoader().load(url, function(object) {
-					widget.addObjectCommand(object);
+					callback ? callback() : widget.addObjectCommand(object);
 				});
 				break;
 
@@ -192,7 +189,7 @@ debugger;
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = filename;
 
-					widget.addObjectCommand(mesh);
+					callback ? callback() : widget.addObjectCommand(mesh);
 				});
 
 				break;
@@ -220,7 +217,7 @@ debugger;
 
 				if (window.cvApiInited) {
 					setTimeout(function() {
-						loadPvzFile(url, widget.addObjectCommand, function() {
+						loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function() {
 							alert("Failed to load the PVZ");
 						});
 					}, 200);
@@ -230,7 +227,7 @@ debugger;
 						window.cvApiInited = true;
 
 						setTimeout(function() {
-							loadPvzFile(url, widget.addObjectCommand, function() {
+							loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function() {
 								alert("Failed to load the PVZ");
 							});
 						}, 200);
@@ -242,13 +239,21 @@ debugger;
 				new THREE.STLLoader().load(url, function(geometry) {
 					geometry.sourceType = "stl";
 					geometry.sourceFile = filename;
+					var material;
+					if (geometry.hasColors) {
+						material = new THREE.MeshPhongMaterial({
+							opacity: geometry.alpha,
+							vertexColors: THREE.VertexColors
+						});
+					} else {
+						material = new THREE.MeshStandardMaterial();
+					}
 
-					var material = new THREE.MeshStandardMaterial();
 
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = filename;
 
-					widget.addObjectCommand(mesh);
+					callback ? callback() : widget.addObjectCommand(mesh);
 				});
 
 				break;
@@ -283,13 +288,13 @@ debugger;
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = filename;
 
-					widget.addObjectCommand(mesh);
+					callback ? callback() : widget.addObjectCommand(mesh);
 				});
 				break;
 
 			case 'wrl':
 				new THREE.VRMLLoader().load(url, function(scene) {
-					widget.setSceneCommand(scene);
+					callback ? callback() : widget.setSceneCommand(scene, true);
 				});
 
 				break;
@@ -302,128 +307,117 @@ debugger;
 
 		}
 	};
-};
 
-function handleJSON(data, file, filename) {
+	function handleJSON(data, filename) {
 
-	if (data.metadata === undefined) { // 2.0
+		if (data.metadata === undefined) { // 2.0
 
-		data.metadata = {
-			type: 'Geometry'
-		};
+			data.metadata = {
+				type: 'Geometry'
+			};
 
-	}
+		}
 
-	if (data.metadata.type === undefined) { // 3.0
+		if (data.metadata.type === undefined) { // 3.0
 
-		data.metadata.type = 'Geometry';
+			data.metadata.type = 'Geometry';
 
-	}
+		}
 
-	if (data.metadata.formatVersion !== undefined) {
+		if (data.metadata.formatVersion !== undefined) {
 
-		data.metadata.version = data.metadata.formatVersion;
+			data.metadata.version = data.metadata.formatVersion;
 
-	}
+		}
 
-	switch (data.metadata.type.toLowerCase()) {
+		switch (data.metadata.type.toLowerCase()) {
 
-		case 'buffergeometry':
+			case 'buffergeometry':
 
-			var loader = new THREE.BufferGeometryLoader();
-			var result = loader.parse(data);
+				var loader = new THREE.BufferGeometryLoader();
+				var result = loader.parse(data);
 
-			var mesh = new THREE.Mesh(result);
+				var mesh = new THREE.Mesh(result);
 
-			widget.addObjectCommand(mesh);
+				widget.addObjectCommand(mesh);
 
-			break;
+				break;
 
-		case 'geometry':
+			case 'geometry':
 
-			var loader = new THREE.JSONLoader();
-			loader.setTexturePath(scope.texturePath);
+				var loader = new THREE.JSONLoader();
 
-			var result = loader.parse(data);
+				var result = loader.parse(data);
 
-			var geometry = result.geometry;
-			var material;
+				var geometry = result.geometry;
+				var material;
 
-			if (result.materials !== undefined) {
+				if (result.materials !== undefined) {
 
-				if (result.materials.length > 1) {
+					if (result.materials.length > 1) {
 
-					material = new THREE.MultiMaterial(result.materials);
+						material = new THREE.MultiMaterial(result.materials);
+
+					} else {
+
+						material = result.materials[0];
+
+					}
 
 				} else {
 
-					material = result.materials[0];
+					material = new THREE.MeshStandardMaterial();
 
 				}
 
-			} else {
+				geometry.sourceType = "ascii";
+				geometry.sourceFile = filename;
 
-				material = new THREE.MeshStandardMaterial();
+				var mesh;
 
-			}
+				if (geometry.animation && geometry.animation.hierarchy) {
 
-			geometry.sourceType = "ascii";
-			geometry.sourceFile = filename;
+					mesh = new THREE.SkinnedMesh(geometry, material);
 
-			var mesh;
+				} else {
 
-			if (geometry.animation && geometry.animation.hierarchy) {
+					mesh = new THREE.Mesh(geometry, material);
 
-				mesh = new THREE.SkinnedMesh(geometry, material);
+				}
 
-			} else {
+				mesh.name = filename;
 
-				mesh = new THREE.Mesh(geometry, material);
+				widget.addObjectCommand(mesh);
 
-			}
+				break;
 
-			mesh.name = filename;
+			case 'object':
 
-			widget.addObjectCommand(mesh);
+				var loader = new THREE.ObjectLoader();
 
-			break;
+				var result = loader.parse(data);
 
-		case 'object':
+				if (result instanceof THREE.Scene) {
 
-			var loader = new THREE.ObjectLoader();
-			loader.setTexturePath(scope.texturePath);
+					widget.setSceneCommand(result);
+				} else {
+					widget.addObjectCommand(result);
+				}
 
-			var result = loader.parse(data);
+				break;
 
-			if (result instanceof THREE.Scene) {
+			case 'scene':
 
-				widget.setSceneCommand(result);
-			} else {
-				widget.addObjectCommand(result);
-			}
+				// DEPRECATED
 
-			break;
+				var loader = new THREE.SceneLoader();
+				loader.parse(data, function(result) {
 
-		case 'scene':
+					widget.setSceneCommand(result.scene);
 
-			// DEPRECATED
+				}, '');
 
-			var loader = new THREE.SceneLoader();
-			loader.parse(data, function(result) {
-
-				widget.setSceneCommand(result.scene);
-
-			}, '');
-
-			break;
-
-		case 'app':
-
-			widget.fromJSON(data);
-
-			break;
-
+				break;
+		}
 	}
-
-
-}
+};
