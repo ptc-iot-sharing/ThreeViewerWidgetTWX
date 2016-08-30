@@ -63,7 +63,14 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'isBindingTarget': true
                 },
                 'DrawAxisHelpers': {
-                    'description': 'Draw Axis Helpers on the ground',
+                    'description': 'Draw Axis Helpers to visualize the the 3 axes in a simple way. The X axis is red. The Y axis is green. The Z axis is blue ',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': true,
+                    'isBindingTarget': true
+                },
+                'DrawGridHelpers': {
+                    'description': 'Draw Grid Helpers on the ground',
                     'baseType': 'BOOLEAN',
                     'isVisible': true,
                     'defaultValue': true,

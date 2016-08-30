@@ -12,12 +12,21 @@ var Loader = function(widget) {
 
 		var extension = url.split('.').pop().split(/\#|\?/)[0].toLowerCase();
 		switch (extension) {
+			case '3mf':
+				new THREE.ThreeMFLoader().load(url, function(model) {
+					callback ? callback() : widget.addObjectCommand(model);
+				});
+				break;
 			case 'amf':
 				new THREE.AMFLoader().load(url, function(model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 				break;
-
+			case 'assimpjson':
+				new THREE.AssimpJSONLoader().load(url, function(model) {
+					callback ? callback() : widget.addObjectCommand(model);
+				});
+				break;
 			case 'awd':
 				new THREE.AWDLoader().load(url, function(scene) {
 					callback ? callback() : widget.setSceneCommand(scene, true);
@@ -192,6 +201,8 @@ var Loader = function(widget) {
 				});
 
 				break;
+
+			case 'ol':
 			case 'pvz':
 				function loadPvzFile(file, successCallback, failCallback) {
 					try {
@@ -234,6 +245,30 @@ var Loader = function(widget) {
 					});
 				}
 				break;
+			case 'sea':
+				// the sea loader is a bit wierd, because it adds stuff to the scene by itself
+				// so create a new scene
+				var scene = new THREE.Scene();
+				var loader = new THREE.SEA3D({
+					autoPlay: true, // Auto play animations
+					container: scene // Container to add models
+				});
+				loader.load(url);
+				loader.onComplete = function(e) {
+					callback ? callback() : widget.setSceneCommand(scene, true);
+					animate();
+				};
+
+				var clock = new THREE.Clock();
+
+				function animate() {
+					var delta = clock.getDelta();
+					requestAnimationFrame(animate);
+					// Update SEA3D Animations
+					THREE.SEA3D.AnimationHandler.update(delta);
+				}
+				break;
+
 			case 'stl':
 				new THREE.STLLoader().load(url, function(geometry) {
 					geometry.sourceType = "stl";

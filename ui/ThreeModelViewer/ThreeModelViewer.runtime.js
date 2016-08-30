@@ -19,6 +19,8 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
     var loader = new Loader(thisWidget);
     // are we viewing a single model or a complex scene
     var defaultScene = false;
+    // needed for the inset Rendering
+    var insetRenderer, insetCamera, insetScene;
     /**
      * Initialize the default scene for viweing single models
      */
@@ -32,13 +34,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         // Lights
         thisWidget.addLights();
 
-        if (thisWidget.getProperty("DrawAxisHelpers")) {
-            /// helpers, backgroup grids, axes
-            var helper = new THREE.GridHelper(20, 10); // originally 4, 0.5
-            var axes = new THREE.AxisHelper(8);
-            group.add(helper);
+        if (thisWidget.getProperty("DrawGridHelpers")) {
+            group.add(new THREE.GridHelper(20, 10));
         }
-
 
         cameraTarget = new THREE.Vector3();
         camera.position.z = 4;
@@ -98,8 +96,12 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             model.position.y = -bbox.min.y;
             pivot.add(model);
             cameraTarget.y = (bbox.max.y - bbox.min.y) / 2;
-            var cameraPos = bbox.max.clone();
+            var cameraPos = bbox.min.clone();
             // this is a bit of a hack. But it moves the camera 2.5 times the vector away to the max bbox
+            cameraPos.x = Math.abs(cameraPos.x);
+            cameraPos.y = Math.abs(cameraPos.y);
+            cameraPos.z = Math.abs(cameraPos.z);
+
             cameraPos.setLength(cameraPos.length() * 2.5);
             camera.position.copy(cameraPos);
         } else {
@@ -123,7 +125,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
 
     // the html is really simple. Just a ccanvas
     this.renderHtml = function() {
-        return '<div class="widget-content widget-ThreeModelViewer"><canvas></canvas></div>';
+        return '<div class="widget-content widget-ThreeModelViewer"><canvas></canvas><div class="inset"></div></div>';
     };
 
     this.afterRender = function() {
@@ -136,31 +138,37 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             canvas: canvas,
             alpha: true
         });
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+       // renderer.setPixelRatio (window.devicePixelRatio);
+        canvas.width = canvas.clientWidth*window.devicePixelRatio;
+        canvas.height = canvas.clientHeight*window.devicePixelRatio;
         camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
+
+        if (thisWidget.getProperty("DrawAxisHelpers")) {
+            setupInset();
+        }
+
         // whenever the canvas resizes, we must be responsive.
         // so watch for canvas resizes via an interval
         function onResize(element, callback) {
-            var height = element.clientHeight;
-            var width = element.clientWidth;
+            var height = element.clientHeight  * window.devicePixelRatio;
+            var width = element.clientWidth * window.devicePixelRatio;
 
             return setInterval(function() {
                 if (element.clientHeight != height || element.clientWidth != width) {
-                    height = element.clientHeight;
-                    width = element.clientWidth;
+                    height = element.clientHeight * window.devicePixelRatio;
+                    width = element.clientWidth * window.devicePixelRatio;
                     callback();
                 }
             }, 500);
         }
         onResize(canvas, function() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
+            canvas.width = canvas.clientWidth * window.devicePixelRatio;
+            canvas.height = canvas.clientHeight * window.devicePixelRatio;
+            renderer.setViewport(0, 0, canvas.clientWidth *window.devicePixelRatio, canvas.clientHeight*window.devicePixelRatio);
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         });
-        renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
+        renderer.setViewport(0, 0, canvas.clientWidth*window.devicePixelRatio, canvas.clientHeight*window.devicePixelRatio);
 
         // set the initial background color
         if (thisWidget.getProperty('BackgroundStyle') === undefined) {
@@ -191,6 +199,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
                  pivot.rotation.setFromVector3(rot);*/
             }
             renderer.render(scene, camera);
+            // also render the insets if they were initialzed 
+            if (insetCamera && insetRenderer) {
+                renderInsets();
+            }
         };
 
         render();
@@ -240,5 +252,44 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             opacity: rgb[5]
         } : '';
     }
+
+    function setupInset() {
+        var insetWidth = 150,
+            insetHeight = 150;
+        var insetContainer = thisWidget.jqElement.find(".inset").get(0);
+        insetContainer.width = insetWidth;
+        insetContainer.height = insetHeight;
+
+        // renderer
+        insetRenderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true
+        });
+        // make sure this is transparent
+        insetRenderer.setClearColor(0x000000, 0);
+        insetRenderer.setSize(insetWidth, insetHeight);
+        insetContainer.appendChild(insetRenderer.domElement);
+
+        // scene
+        insetScene = new THREE.Scene();
+
+        // camera
+        insetCamera = new THREE.PerspectiveCamera(50, insetWidth / insetHeight, 1, 1000);
+        insetCamera.up = camera.up; // important!
+
+        // axes
+        insetScene.add(new THREE.AxisHelper(100));
+    }
+
+    function renderInsets() {
+        //copy position of the camera into inset
+        insetCamera.position.copy(camera.position);
+        insetCamera.position.sub(controls.target);
+        insetCamera.position.setLength(300);
+        insetCamera.lookAt(insetScene.position);
+
+        insetRenderer.render(insetScene, insetCamera);
+    }
+
 
 };

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx RO Tech Sales" packageVersion="0.0.100" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx RO Tech Sales" packageVersion="0.0.141" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -13,6 +13,7 @@
         <FileResource type="JS" file="OrbitControls.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="Detector.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="Loader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders\libs\jszip.min.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders\3MFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders\AMFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders\AssimpJSONLoader.js" description="" isDevelopment="false" isRuntime="true"/>
@@ -56,6 +57,11 @@
         <FileResource type="JS" file="loaders\gltf\glTF1Loader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders\gltf\glTF2LoaderUtils.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders\gltf\glTF4Shaders.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders\sea3d\SEA3D.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders\sea3d\SEA3DDeflate.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders\sea3d\SEA3DLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders\sea3d\SEA3DLZMA.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders\sea3d\XSEA3DLegacy.js" description="" isDevelopment="false" isRuntime="true"/>
       </UIResources>
     </Widget>
   </Widgets>
