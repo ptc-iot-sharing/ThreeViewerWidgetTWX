@@ -29,7 +29,6 @@ var Loader = function(widget) {
 				break;
 			case 'awd':
 				new THREE.AWDLoader().load(url, function(scene) {
-					debugger;
 					callback ? callback() : widget.setSceneCommand(scene, true);
 				});
 				break;
@@ -204,6 +203,7 @@ var Loader = function(widget) {
 				break;
 
 			case 'ol':
+			case 'pvt':
 			case 'pvz':
 				function loadPvzFile(file, successCallback, failCallback) {
 					try {
