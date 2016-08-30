@@ -115,7 +115,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
      */
     this.setSceneCommand = function(sceneObject, addLights) {
         scene = sceneObject;
-        if (addLights)
+        if (addLights && thisWidget.getProperty("AddLightsToSceneFiles"))
             thisWidget.addLights();
         defaultScene = false;
         console.log("Changed Scene");

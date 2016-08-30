@@ -76,6 +76,13 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'defaultValue': true,
                     'isBindingTarget': true
                 },
+                'AddLightsToSceneFiles': {
+                    'description': 'When loading scene files, add the default lights',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': true,
+                    'isBindingTarget': true
+                },
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
