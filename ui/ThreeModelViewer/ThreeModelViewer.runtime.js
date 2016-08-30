@@ -117,10 +117,26 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
      */
     this.setSceneCommand = function(sceneObject, addLights) {
         scene = sceneObject;
-        if (addLights && thisWidget.getProperty("AddLightsToSceneFiles"))
+        if (addLights && thisWidget.getProperty("AddLightsToSceneFiles")) {
             thisWidget.addLights();
+        }
+        // search the scene if we have a camera. If so, clone it
+        for (var index = 0; index < sceneObject.children.length; index++) {
+            var element = sceneObject.children[index];
+            if(element instanceof THREE.PerspectiveCamera) {
+                thisWidget.setCameraCommand(element);
+            }
+        }
         defaultScene = false;
         console.log("Changed Scene");
+    };
+
+    /**
+     * Set the camera position 
+     */
+    this.setCameraCommand = function(newCamera) {
+        camera.position.copy(newCamera.position);
+        camera.rotation.copy(newCamera.rotation);
     };
 
     // the html is really simple. Just a ccanvas
@@ -138,9 +154,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             canvas: canvas,
             alpha: true
         });
-       // renderer.setPixelRatio (window.devicePixelRatio);
-        canvas.width = canvas.clientWidth*window.devicePixelRatio;
-        canvas.height = canvas.clientHeight*window.devicePixelRatio;
+        // renderer.setPixelRatio (window.devicePixelRatio);
+        canvas.width = canvas.clientWidth * window.devicePixelRatio;
+        canvas.height = canvas.clientHeight * window.devicePixelRatio;
         camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
 
         if (thisWidget.getProperty("DrawAxisHelpers")) {
@@ -150,7 +166,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         // whenever the canvas resizes, we must be responsive.
         // so watch for canvas resizes via an interval
         function onResize(element, callback) {
-            var height = element.clientHeight  * window.devicePixelRatio;
+            var height = element.clientHeight * window.devicePixelRatio;
             var width = element.clientWidth * window.devicePixelRatio;
 
             return setInterval(function() {
@@ -164,11 +180,11 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         onResize(canvas, function() {
             canvas.width = canvas.clientWidth * window.devicePixelRatio;
             canvas.height = canvas.clientHeight * window.devicePixelRatio;
-            renderer.setViewport(0, 0, canvas.clientWidth *window.devicePixelRatio, canvas.clientHeight*window.devicePixelRatio);
+            renderer.setViewport(0, 0, canvas.clientWidth * window.devicePixelRatio, canvas.clientHeight * window.devicePixelRatio);
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         });
-        renderer.setViewport(0, 0, canvas.clientWidth*window.devicePixelRatio, canvas.clientHeight*window.devicePixelRatio);
+        renderer.setViewport(0, 0, canvas.clientWidth * window.devicePixelRatio, canvas.clientHeight * window.devicePixelRatio);
 
         // set the initial background color
         if (thisWidget.getProperty('BackgroundStyle') === undefined) {

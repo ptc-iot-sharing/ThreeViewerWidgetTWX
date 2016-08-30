@@ -29,6 +29,7 @@ var Loader = function(widget) {
 				break;
 			case 'awd':
 				new THREE.AWDLoader().load(url, function(scene) {
+					debugger;
 					callback ? callback() : widget.setSceneCommand(scene, true);
 				});
 				break;
@@ -255,6 +256,10 @@ var Loader = function(widget) {
 				});
 				loader.load(url);
 				loader.onComplete = function(e) {
+					if (loader.cameras[0]) {
+						// set the camera if we have one in the scene
+						widget.setCameraCommand(loader.cameras[0]);
+					}
 					callback ? callback() : widget.setSceneCommand(scene, true);
 					animate();
 				};
