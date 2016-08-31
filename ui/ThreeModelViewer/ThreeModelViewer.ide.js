@@ -172,7 +172,7 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'description': 'Set to true to automatically rotate around the target',
                     'baseType': 'BOOLEAN',
                     'isVisible': true,
-                    'defaultValue': true,
+                    'defaultValue': false,
                     'isBindingTarget': true
                 },
                 'BackgroundStyle': {
