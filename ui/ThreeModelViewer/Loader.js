@@ -8,9 +8,9 @@ var Loader = function(widget) {
 
 	this.texturePath = '';
 
-	this.loadFile = function(filename, url, callback) {
+	this.loadFile = function(modelType, url, callback) {
 
-		var extension = url.split('.').pop().split(/\#|\?/)[0].toLowerCase();
+		var extension = modelType=="Auto-Detect" ? url.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
 		switch (extension) {
 			case '3mf':
 				new THREE.ThreeMFLoader().load(url, function(model) {
@@ -50,7 +50,7 @@ var Loader = function(widget) {
 					var material = new THREE.MeshStandardMaterial();
 
 					var mesh = new THREE.Mesh(geometry, material);
-					mesh.name = filename;
+					mesh.name = modelType;
 
 					callback ? callback() : widget.addObjectCommand(mesh);
 				});
@@ -64,7 +64,7 @@ var Loader = function(widget) {
 					var material = new THREE.MeshStandardMaterial();
 
 					var mesh = new THREE.Mesh(geometry, material);
-					mesh.name = filename;
+					mesh.name = modelType;
 
 					callback ? callback() : widget.addObjectCommand(mesh);
 				});
@@ -118,7 +118,7 @@ var Loader = function(widget) {
 							event.data.metadata = {
 								version: 2
 							};
-							handleJSON(event.data, file, filename);
+							handleJSON(event.data, file, modelType);
 
 						};
 
@@ -143,7 +143,7 @@ var Loader = function(widget) {
 
 					}
 
-					handleJSON(data, filename);
+					handleJSON(data, modelType);
 
 				});
 
@@ -166,7 +166,7 @@ var Loader = function(widget) {
 
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.mixer = new THREE.AnimationMixer(mesh);
-					mesh.name = filename;
+					mesh.name = modelType;
 
 					callback ? callback() : widget.addObjectCommand(mesh);
 				});
@@ -190,12 +190,12 @@ var Loader = function(widget) {
 			case 'ply':
 				new THREE.PLYLoader().load(url, function(geometry) {
 					geometry.sourceType = "ply";
-					geometry.sourceFile = filename;
+					geometry.sourceFile = modelType;
 
 					var material = new THREE.MeshStandardMaterial();
 
 					var mesh = new THREE.Mesh(geometry, material);
-					mesh.name = filename;
+					mesh.name = modelType;
 
 					callback ? callback() : widget.addObjectCommand(mesh);
 				});
@@ -277,7 +277,7 @@ var Loader = function(widget) {
 			case 'stl':
 				new THREE.STLLoader().load(url, function(geometry) {
 					geometry.sourceType = "stl";
-					geometry.sourceFile = filename;
+					geometry.sourceFile = modelType;
 					var material;
 					if (geometry.hasColors) {
 						material = new THREE.MeshPhongMaterial({
@@ -290,7 +290,7 @@ var Loader = function(widget) {
 
 
 					var mesh = new THREE.Mesh(geometry, material);
-					mesh.name = filename;
+					mesh.name = modelType;
 
 					callback ? callback() : widget.addObjectCommand(mesh);
 				});
@@ -320,12 +320,12 @@ var Loader = function(widget) {
 			case 'vtk':
 				new THREE.VTKLoader().load(url, function(geometry) {
 					geometry.sourceType = "vtk";
-					geometry.sourceFile = filename;
+					geometry.sourceFile = modelType;
 
 					var material = new THREE.MeshStandardMaterial();
 
 					var mesh = new THREE.Mesh(geometry, material);
-					mesh.name = filename;
+					mesh.name = modelType;
 
 					callback ? callback() : widget.addObjectCommand(mesh);
 				});

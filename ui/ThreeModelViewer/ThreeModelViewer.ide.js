@@ -27,27 +27,28 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'defaultValue': 800,
                     'isBindingTarget': false
                 },
-                'Pitch': {
-                    'description': 'Pitch of the Model',
-                    'baseType': 'NUMBER',
-                    'isVisible': true,
-                    'defaultValue': 0.0,
-                    'isBindingTarget': true
-                },
-                'Roll': {
-                    'description': 'Roll of the Model',
-                    'baseType': 'NUMBER',
-                    'isVisible': true,
-                    'defaultValue': 0.0,
-                    'isBindingTarget': true
-                },
-                'Heading': {
-                    'description': 'Heading of the Model',
-                    'baseType': 'NUMBER',
-                    'isVisible': true,
-                    'defaultValue': 0.0,
-                    'isBindingTarget': true
-                },
+                /*
+                                'Pitch': {
+                                    'description': 'Pitch of the Model',
+                                    'baseType': 'NUMBER',
+                                    'isVisible': true,
+                                    'defaultValue': 0.0,
+                                    'isBindingTarget': true
+                                },
+                                'Roll': {
+                                    'description': 'Roll of the Model',
+                                    'baseType': 'NUMBER',
+                                    'isVisible': true,
+                                    'defaultValue': 0.0,
+                                    'isBindingTarget': true
+                                },
+                                'Heading': {
+                                    'description': 'Heading of the Model',
+                                    'baseType': 'NUMBER',
+                                    'isVisible': true,
+                                    'defaultValue': 0.0,
+                                    'isBindingTarget': true
+                                },*/
                 'ModelUrl': {
                     'description': 'URL to the model',
                     'baseType': 'STRING',
@@ -56,11 +57,81 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'isBindingTarget': true
                 },
                 'ModelType': {
-                    'description': 'Type of the model (filename)',
+                    'description': 'Type of the model. If Auto-detect use the file extension',
                     'baseType': 'STRING',
                     'isVisible': true,
-                    'defaultValue': 0.0,
-                    'isBindingTarget': true
+                    'defaultValue': 'Auto-Detect',
+                    'isBindingTarget': true,
+                    'selectOptions': [{
+                        value: 'Auto-Detect',
+                        text: 'Auto-Detect'
+                    }, {
+                        value: 'dae',
+                        text: 'Collada'
+                    }, {
+                        value: '3mf',
+                        text: '3mf'
+                    }, {
+                        value: 'amf',
+                        text: 'amf'
+                    }, {
+                        value: 'awd',
+                        text: 'awd'
+                    }, {
+                        value: 'babylon',
+                        text: 'babylon'
+                    }, {
+                        value: 'ctm',
+                        text: 'ctm'
+                    }, {
+                        value: 'fbx',
+                        text: 'fbx'
+                    }, {
+                        value: 'gltf',
+                        text: 'gltf'
+                    }, {
+                        value: 'json',
+                        text: 'json'
+                    }, {
+                        value: 'md2',
+                        text: 'md2'
+                    }, {
+                        value: 'obj',
+                        text: 'obj'
+                    }, {
+                        value: 'ply',
+                        text: 'ply'
+                    }, {
+                        value: 'stl',
+                        text: 'stl'
+                    }, {
+                        value: 'gltf',
+                        text: 'gltf'
+                    }, {
+                        value: 'vtk',
+                        text: 'vtk'
+                    }, {
+                        value: 'wrl',
+                        text: 'wrl'
+                    }, {
+                        value: 'gltf',
+                        text: 'gltf'
+                    }, {
+                        value: 'assimpjson',
+                        text: 'assimpjson'
+                    }, {
+                        value: 'sea',
+                        text: 'sea'
+                    }, {
+                        value: 'pvz',
+                        text: 'pvz'
+                    }, {
+                        value: 'ol',
+                        text: 'ol'
+                    }, {
+                        value: 'pvt',
+                        text: 'ol'
+                    }]
                 },
                 'DrawAxisHelpers': {
                     'description': 'Draw Axis Helpers to visualize the the 3 axes in a simple way. The X axis is red. The Y axis is green. The Z axis is blue ',
@@ -90,10 +161,24 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'defaultValue': true,
                     'isBindingTarget': true
                 },
+                'CameraControls': {
+                    'description': 'Enable controlling the camera',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': true,
+                    'isBindingTarget': true
+                },
+                'CameraAutoRotate': {
+                    'description': 'Set to true to automatically rotate around the target',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': true,
+                    'isBindingTarget': true
+                },
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
-                    'description': 'The background, foreground and text size of the widget'
+                    'description': 'The background of the widget. Opacity is supported'
                 }
                 // add any additional properties here
             }

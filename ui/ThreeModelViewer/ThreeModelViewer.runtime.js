@@ -196,9 +196,17 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         thisWidget.initializeScene();
         // add the orbit controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
+        if(!thisWidget.getProperty("CameraControls")) {
+            controls.enableZoom = false;
+            controls.enableKeys = false;
+            controls.enableRotate = false;
+            controls.enablePan = false;
+        }
+        if(thisWidget.getProperty("CameraAutoRotate")) {
+            controls.autoRotate = true;
+        }
         controls.enableDamping = true;
-        controls.dampingFactor = 0.75;
-        controls.enableZoom = true;
+        controls.dampingFactor = 0.25;
 
         var domElementId = this.jqElementId;
         var wt = document.getElementById(domElementId);
