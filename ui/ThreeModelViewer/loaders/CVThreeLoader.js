@@ -296,9 +296,9 @@ var CVThreeLoader = (function() {
                         var positions = new Float32Array(this.appearances[key].triangleCount *3 *3);
                         var normals = new Float32Array(this.appearances[key].triangleCount *3 *3);
                         var triangleOffset = 0;
-                        for (var i in this.appearances[key].meshes) {
+                        for (var i = 0;i < this.appearances[key].meshes.length;i++) {
                             var meshInfo = this.appearances[key].meshes[i];
-                            triangleOffset = this.CreateThreeMesh(positions, normals, triangleOffset, meshInfo)
+                            triangleOffset = this.CreateThreeMesh(positions, normals, triangleOffset, meshInfo);
                         }
                         var geometry = new THREE.BufferGeometry();
                         geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );

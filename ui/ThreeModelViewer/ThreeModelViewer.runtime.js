@@ -123,7 +123,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         // search the scene if we have a camera. If so, clone it
         for (var index = 0; index < sceneObject.children.length; index++) {
             var element = sceneObject.children[index];
-            if(element instanceof THREE.PerspectiveCamera) {
+            if (element instanceof THREE.PerspectiveCamera) {
                 thisWidget.setCameraCommand(element);
             }
         }
@@ -196,13 +196,13 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         thisWidget.initializeScene();
         // add the orbit controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
-        if(!thisWidget.getProperty("CameraControls")) {
+        if (!thisWidget.getProperty("CameraControls")) {
             controls.enableZoom = false;
             controls.enableKeys = false;
             controls.enableRotate = false;
             controls.enablePan = false;
         }
-        if(thisWidget.getProperty("CameraAutoRotate")) {
+        if (thisWidget.getProperty("CameraAutoRotate")) {
             controls.autoRotate = true;
         }
         controls.enableDamping = true;
@@ -228,6 +228,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
                 renderInsets();
             }
         };
+        // if we had a model set, then attempt to load it
+        if (thisWidget.getProperty("ModelUrl")) {
+            loader.loadFile(thisWidget.getProperty("ModelType"), thisWidget.getProperty("ModelUrl"));
+        }
 
         render();
     };

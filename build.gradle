@@ -29,8 +29,7 @@ project.ext {
     thingworxPass = "admin"
 }
 
-task increaseVersionNumber() {
-  doLast {
+def increaseVersionNumber() {
       //getWidgetList()
     def file = "${baseDir}/metadata.xml"
     def parser = new groovy.util.XmlParser(false,true);
@@ -53,8 +52,6 @@ task increaseVersionNumber() {
     PrintWriter pw = new PrintWriter(new File(file))
     pw.write(groovy.xml.XmlUtil.serialize(xml))
     pw.close()
-
-  }
 }
 
 def getWidgetList() {
@@ -80,7 +77,7 @@ def getWidgetList() {
     pw.close()
 }
 
-task generateUiMetadata(dependsOn: increaseVersionNumber) {
+task generateUiMetadata() {
     def list = []
 
     def dir = new File("${project.ext.uiDir}")
