@@ -1,8 +1,3 @@
-TW.log.ceva = TW.log.error;
-TW.log.error = function(err, exp) {
-    console.error(err, exp);
-    TW.log.ceva(err);
-};
 TW.Runtime.Widgets.ThreeModelViewer = function() {
     var thisWidget = this;
     // controls of the OrbitControls
@@ -21,6 +16,8 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
     var defaultScene = false;
     // needed for the inset Rendering
     var insetRenderer, insetCamera, insetScene;
+
+    var renderRequest;
     /**
      * Initialize the default scene for viweing single models
      */
@@ -213,7 +210,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         wt.appendChild(renderer.domElement);
 
         var render = function() {
-            requestAnimationFrame(render);
+            renderRequest = requestAnimationFrame(render);
             controls.target = cameraTarget;
             controls.update();
             if (pivot) {
@@ -318,6 +315,8 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
 
         insetRenderer.render(insetScene, insetCamera);
     }
-
+    this.beforeDestroy = function() {
+        window.cancelAnimationFrame(renderRequest);
+    };
 
 };
