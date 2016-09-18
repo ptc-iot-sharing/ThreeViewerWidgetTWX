@@ -8,9 +8,11 @@ var Loader = function(widget) {
 
 	this.texturePath = '';
 
-	this.loadFile = function(modelType, url, callback) {
+	this.loadFile = function(modelType, url, texturePath, callback) {
 
-		var extension = modelType=="Auto-Detect" ? url.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
+		var extension = modelType == "Auto-Detect" ? url.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
+		// handle the texture path. If it's set, then use it. If not, get it from the URL
+		texturePath = texturePath ? texturePath : url.substring(0, url.lastIndexOf("/") + 1);
 		switch (extension) {
 			case '3mf':
 				new THREE.ThreeMFLoader().load(url, function(model) {
@@ -29,13 +31,13 @@ var Loader = function(widget) {
 				break;
 			case 'awd':
 				new THREE.AWDLoader().load(url, function(scene) {
-					callback ? callback() : widget.setSceneCommand(scene, true);
+					callback ? callback() : widget.setSceneCommand(scene);
 				});
 				break;
 
 			case 'babylon':
 				new THREE.BabylonLoader().load(url, function(scene) {
-					callback ? callback() : widget.setSceneCommand(scene, true);
+					callback ? callback() : widget.setSceneCommand(scene);
 				});
 
 				break;
@@ -79,7 +81,9 @@ var Loader = function(widget) {
 				break;
 
 			case 'fbx':
-				new THREE.FBXLoader().load(url, function(model) {
+				var fbxLoader = new THREE.FBXLoader();
+				fbxLoader.textureBasePath = texturePath;
+				fbxLoader.load(url, function(model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 
@@ -118,7 +122,7 @@ var Loader = function(widget) {
 							event.data.metadata = {
 								version: 2
 							};
-							handleJSON(event.data, file, modelType);
+							handleJSON(event.data, file, texturePath);
 
 						};
 
@@ -143,7 +147,7 @@ var Loader = function(widget) {
 
 					}
 
-					handleJSON(data, modelType);
+					handleJSON(data, modelType, texturePath);
 
 				});
 
@@ -260,7 +264,7 @@ var Loader = function(widget) {
 						// set the camera if we have one in the scene
 						widget.setCameraCommand(loader.cameras[0]);
 					}
-					callback ? callback() : widget.setSceneCommand(scene, true);
+					callback ? callback() : widget.setSceneCommand(scene);
 					animate();
 				};
 
@@ -333,7 +337,7 @@ var Loader = function(widget) {
 
 			case 'wrl':
 				new THREE.VRMLLoader().load(url, function(scene) {
-					callback ? callback() : widget.setSceneCommand(scene, true);
+					callback ? callback() : widget.setSceneCommand(scene);
 				});
 
 				break;
@@ -347,7 +351,7 @@ var Loader = function(widget) {
 		}
 	};
 
-	function handleJSON(data, filename) {
+	function handleJSON(data, filename, texturePath) {
 
 		if (data.metadata === undefined) { // 2.0
 
@@ -433,6 +437,7 @@ var Loader = function(widget) {
 			case 'object':
 
 				var loader = new THREE.ObjectLoader();
+				loader.texturePath = texturePath;
 
 				var result = loader.parse(data);
 
@@ -454,7 +459,7 @@ var Loader = function(widget) {
 
 					widget.setSceneCommand(result.scene);
 
-				}, '');
+				}, texturePath);
 
 				break;
 		}

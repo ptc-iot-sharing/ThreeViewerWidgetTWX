@@ -138,7 +138,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
     /**
      * Sets a new scene 
      */
-    this.setSceneCommand = function(sceneObject, addLights) {
+    this.setSceneCommand = function(sceneObject) {
         scene = sceneObject;
          if (eventControls) {
             var visibleObjects = [];
@@ -148,7 +148,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
                 eventControls.attach(visibleObjects[i]);
             }
         }
-        if (addLights && thisWidget.getProperty("AddLightsToSceneFiles")) {
+        if (thisWidget.getProperty("AddLightsToSceneFiles")) {
             thisWidget.addLights();
         }
         // search the scene if we have a camera. If so, clone it
@@ -291,7 +291,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         };
         // if we had a model set, then attempt to load it
         if (thisWidget.getProperty("ModelUrl")) {
-            loader.loadFile(thisWidget.getProperty("ModelType"), thisWidget.getProperty("ModelUrl"));
+            loader.loadFile(thisWidget.getProperty("ModelType"), thisWidget.getProperty("ModelUrl"), thisWidget.getProperty("TexturePath"));
         }
 
         render();
@@ -304,7 +304,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             handleBackgroundColor();
         }
         if (updatePropertyInfo.TargetProperty === "ModelUrl") {
-            loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue);
+            loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("TexturePath"));
         }
     };
 

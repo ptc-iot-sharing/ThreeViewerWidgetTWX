@@ -196,7 +196,13 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'defaultValue': false,
                     'isBindingSource': true
                 },
-                
+                'TexturePath': {
+                    'description': 'If textures are requested, what is the path to get them. If null, defaults to the folder where the scene is stored.',
+                    'baseType': 'STRING',
+                    'isVisible': true,
+                    'defaultValue': false,
+                    'isBindingTarget': true
+                },                
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
