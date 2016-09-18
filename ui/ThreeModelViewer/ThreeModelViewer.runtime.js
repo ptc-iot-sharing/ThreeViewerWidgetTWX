@@ -1,7 +1,7 @@
 TW.Runtime.Widgets.ThreeModelViewer = function() {
     var thisWidget = this;
-    // controls of the OrbitControls
-    var controls;
+    // controls of the OrbitControls and EventsControls
+    var controls, eventControls;
     var renderer;
     // the current scene
     var scene;
@@ -70,6 +70,22 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         scene.add(directionalLight, dl1, dl2, dl3, dl4);
     };
 
+    function listVisibleObjects(visibleObjects, object) {
+        //scene.updateMatrixWorld(); // unneeded?
+        for (var i = 0; i < object.children.length; i++) {
+            if (object.children[i].visible !== undefined && object.children[i].visible) {
+                if (object.children[i].children.length !== 0) {
+                    listVisibleObjects(visibleObjects, object.children[i]);
+                } else {
+                    // Limit to mesh otherwise bounding box is picked
+                    if (1) {
+                        visibleObjects.push(object.children[i]);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Adds a new object to the scene. It first attempts to place it in the origin, then positions the camera in its best position to view it
      */
@@ -77,6 +93,16 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         if (!defaultScene || thisWidget.getProperty("ResetSceneOnModelChange")) {
             thisWidget.initializeScene();
         }
+
+        if (eventControls) {
+            var visibleObjects = [];
+            listVisibleObjects(visibleObjects, model);
+
+            for (var i = 0; i < visibleObjects.length; i++) {
+                eventControls.attach(visibleObjects[i]);
+            }
+        }
+
         var bbox = new THREE.Box3().setFromObject(model);
         // if the model is a bit too big or too small, we'll try to scale it a bit.
         // this means scaling a model of a bbox of 600 down by 0.05
@@ -114,6 +140,14 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
      */
     this.setSceneCommand = function(sceneObject, addLights) {
         scene = sceneObject;
+         if (eventControls) {
+            var visibleObjects = [];
+            listVisibleObjects(visibleObjects, sceneObject);
+
+            for (var i = 0; i < visibleObjects.length; i++) {
+                eventControls.attach(visibleObjects[i]);
+            }
+        }
         if (addLights && thisWidget.getProperty("AddLightsToSceneFiles")) {
             thisWidget.addLights();
         }
@@ -193,6 +227,33 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         thisWidget.initializeScene();
         // add the orbit controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        if (thisWidget.getProperty('EnableSelection')) {
+            eventControls = new EventsControls(camera, renderer.domElement);
+            var selMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00d9ff
+            });
+
+            eventControls.attachEvent('mouseOver', function() {
+                this.container.style.cursor = 'pointer';
+                this.mouseOvered.oldMaterial = this.mouseOvered.material;
+                this.mouseOvered.material = selMaterial;
+               // console.log('the key at number ' + this.event.item + ' is select');
+
+            });
+
+            eventControls.attachEvent('mouseOut', function() {
+               // this.container.style.cursor = 'auto';
+                this.mouseOvered.material = this.mouseOvered.oldMaterial;
+
+            });
+
+            eventControls.attachEvent('onclick', function() {
+               // console.log('the key at number ' + this.event.item + ' is pressed');
+                thisWidget.setProperty("SelectedItem", this.event.item);
+                thisWidget.setProperty("SelectedItemName", this.event.object.name);
+            });
+        }
         if (!thisWidget.getProperty("CameraControls")) {
             controls.enableZoom = false;
             controls.enableKeys = false;
@@ -223,6 +284,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             // also render the insets if they were initialzed 
             if (insetCamera && insetRenderer) {
                 renderInsets();
+            }
+            if (eventControls) {
+                eventControls.update();
             }
         };
         // if we had a model set, then attempt to load it

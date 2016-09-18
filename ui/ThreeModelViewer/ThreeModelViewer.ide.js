@@ -175,6 +175,28 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'defaultValue': false,
                     'isBindingTarget': true
                 },
+                'EnableSelection': {
+                    'description': 'Enable selection of child elements in the scene',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': false,
+                    'isBindingTarget': true
+                },
+                'SelectedItem': {
+                    'description': 'The id currently selected item in the scene',
+                    'baseType': 'INTEGER',
+                    'isVisible': true,
+                    'defaultValue': false,
+                    'isBindingSource': true
+                },
+                'SelectedItemName': {
+                    'description': 'The name currently selected item in the scene',
+                    'baseType': 'STRING',
+                    'isVisible': true,
+                    'defaultValue': false,
+                    'isBindingSource': true
+                },
+                
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',

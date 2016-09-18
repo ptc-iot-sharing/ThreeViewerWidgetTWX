@@ -84,6 +84,8 @@ task generateUiMetadata() {
     dir.eachFileRecurse (FileType.FILES) { file ->
         list << file
     }
+    increaseVersionNumber()
+    
 }
 
 task prepPackage(dependsOn: generateUiMetadata) {
