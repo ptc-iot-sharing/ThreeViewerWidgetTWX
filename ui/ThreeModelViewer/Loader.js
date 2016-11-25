@@ -2,41 +2,41 @@
  * @author mrdoob / http://mrdoob.com/
  * Modified by Petrisor Lacatus to adapt to other types of loading
  */
-var Loader = function(widget) {
+var Loader = function (widget) {
 
 	var scope = this;
 
 	this.texturePath = '';
 
-	this.loadFile = function(modelType, url, texturePath, callback) {
+	this.loadFile = function (modelType, url, texturePath, callback) {
 
 		var extension = modelType == "Auto-Detect" ? url.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
 		// handle the texture path. If it's set, then use it. If not, get it from the URL
 		texturePath = texturePath ? texturePath : url.substring(0, url.lastIndexOf("/") + 1);
 		switch (extension) {
 			case '3mf':
-				new THREE.ThreeMFLoader().load(url, function(model) {
+				new THREE.ThreeMFLoader().load(url, function (model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 				break;
 			case 'amf':
-				new THREE.AMFLoader().load(url, function(model) {
+				new THREE.AMFLoader().load(url, function (model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 				break;
 			case 'assimpjson':
-				new THREE.AssimpJSONLoader().load(url, function(model) {
+				new THREE.AssimpJSONLoader().load(url, function (model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 				break;
 			case 'awd':
-				new THREE.AWDLoader().load(url, function(scene) {
+				new THREE.AWDLoader().load(url, function (scene) {
 					callback ? callback() : widget.setSceneCommand(scene);
 				});
 				break;
 
 			case 'babylon':
-				new THREE.BabylonLoader().load(url, function(scene) {
+				new THREE.BabylonLoader().load(url, function (scene) {
 					callback ? callback() : widget.setSceneCommand(scene);
 				});
 
@@ -60,7 +60,7 @@ var Loader = function(widget) {
 				break;
 
 			case 'ctm':
-				new THREE.CTMLoader().load(url, function(geometry) {
+				new THREE.CTMLoader().load(url, function (geometry) {
 					geometry.sourceType = "ctm";
 
 					var material = new THREE.MeshStandardMaterial();
@@ -74,7 +74,7 @@ var Loader = function(widget) {
 				break;
 
 			case 'dae':
-				new THREE.ColladaLoader().load(url, function(collada) {
+				new THREE.ColladaLoader().load(url, function (collada) {
 					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
@@ -83,14 +83,14 @@ var Loader = function(widget) {
 			case 'fbx':
 				var fbxLoader = new THREE.FBXLoader();
 				fbxLoader.textureBasePath = texturePath;
-				fbxLoader.load(url, function(model) {
+				fbxLoader.load(url, function (model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 
 				break;
 
 			case 'gltf':
-				new THREE.glTFLoader().load(url, function(collada) {
+				new THREE.glTFLoader().load(url, function (collada) {
 					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
@@ -117,7 +117,7 @@ var Loader = function(widget) {
 
 						var worker = new Worker(url);
 
-						worker.onmessage = function(event) {
+						worker.onmessage = function (event) {
 
 							event.data.metadata = {
 								version: 2
@@ -155,14 +155,14 @@ var Loader = function(widget) {
 
 
 			case 'kmz':
-				new THREE.KMZLoader().load(url, function(collada) {
+				new THREE.KMZLoader().load(url, function (collada) {
 					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
 				break;
 
 			case 'md2':
-				new THREE.MD2Loader().load(url, function(geometry) {
+				new THREE.MD2Loader().load(url, function (geometry) {
 					var material = new THREE.MeshStandardMaterial({
 						morphTargets: true,
 						morphNormals: true
@@ -178,21 +178,37 @@ var Loader = function(widget) {
 				break;
 
 			case 'obj':
-				new THREE.OBJLoader().load(url, function(object) {
-					callback ? callback() : widget.addObjectCommand(object);
-				});
+				// try to load a mtl in the same folder as the obj
+				// find the path to the mtl
 
+				var objLoader = new THREE.OBJLoader();
+				var loadObjFunction = function () {
+					objLoader.load(url, function (object) {
+						callback ? callback() : widget.addObjectCommand(object);
+					});
+				};
+				var mtlPath;
+				if (/.*\/(.*)\..*/.exec(url).length > 0) {
+					mtlPath = /.*\/(.*)\..*/.exec(url)[1] + ".mtl";
+				}
+				var mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath(texturePath);
+				mtlLoader.load(mtlPath, function (materials) {
+					materials.preload();
+					objLoader.setMaterials(materials);
+					loadObjFunction();
+				}, undefined, loadObjFunction);
 
 				break;
 
 			case 'playcanvas':
-				new THREE.PlayCanvasLoader().load(url, function(object) {
+				new THREE.PlayCanvasLoader().load(url, function (object) {
 					callback ? callback() : widget.addObjectCommand(object);
 				});
 				break;
 
 			case 'ply':
-				new THREE.PLYLoader().load(url, function(geometry) {
+				new THREE.PLYLoader().load(url, function (geometry) {
 					geometry.sourceType = "ply";
 					geometry.sourceFile = modelType;
 
@@ -212,10 +228,10 @@ var Loader = function(widget) {
 				function loadPvzFile(file, successCallback, failCallback) {
 					try {
 						var createhierarchy = true;
-						CVThreeLoader.LoadModel(file, function(obj) {
+						CVThreeLoader.LoadModel(file, function (obj) {
 								successCallback(obj);
 							},
-							function(obj) {
+							function (obj) {
 								if (failCallback) failCallback();
 							},
 							createhierarchy);
@@ -231,18 +247,18 @@ var Loader = function(widget) {
 				// wait a bit because we can get a error Assertion failed: you need to wait for the runtime to be ready (e.g. wait for main() to be called)
 
 				if (window.cvApiInited) {
-					setTimeout(function() {
-						loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function() {
+					setTimeout(function () {
+						loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function () {
 							alert("Failed to load the PVZ");
 						});
 					}, 200);
 				} else {
-					CVThreeLoader.Init('/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/loaders/libthingload', function() {
+					CVThreeLoader.Init('/Thingworx/Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/loaders/libthingload', function () {
 						console.log('CVThreeLoader Ready');
 						window.cvApiInited = true;
 
-						setTimeout(function() {
-							loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function() {
+						setTimeout(function () {
+							loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function () {
 								alert("Failed to load the PVZ");
 							});
 						}, 200);
@@ -259,7 +275,7 @@ var Loader = function(widget) {
 					container: scene // Container to add models
 				});
 				loader.load(url);
-				loader.onComplete = function(e) {
+				loader.onComplete = function (e) {
 					if (loader.cameras[0]) {
 						// set the camera if we have one in the scene
 						widget.setCameraCommand(loader.cameras[0]);
@@ -279,7 +295,7 @@ var Loader = function(widget) {
 				break;
 
 			case 'stl':
-				new THREE.STLLoader().load(url, function(geometry) {
+				new THREE.STLLoader().load(url, function (geometry) {
 					geometry.sourceType = "stl";
 					geometry.sourceFile = modelType;
 					var material;
@@ -322,7 +338,7 @@ var Loader = function(widget) {
 				*/
 
 			case 'vtk':
-				new THREE.VTKLoader().load(url, function(geometry) {
+				new THREE.VTKLoader().load(url, function (geometry) {
 					geometry.sourceType = "vtk";
 					geometry.sourceFile = modelType;
 
@@ -336,7 +352,7 @@ var Loader = function(widget) {
 				break;
 
 			case 'wrl':
-				new THREE.VRMLLoader().load(url, function(scene) {
+				new THREE.VRMLLoader().load(url, function (scene) {
 					callback ? callback() : widget.setSceneCommand(scene);
 				});
 
@@ -455,7 +471,7 @@ var Loader = function(widget) {
 				// DEPRECATED
 
 				var loader = new THREE.SceneLoader();
-				loader.parse(data, function(result) {
+				loader.parse(data, function (result) {
 
 					widget.setSceneCommand(result.scene);
 
