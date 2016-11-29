@@ -66,7 +66,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         camera.position.y = 12;
         camera.position.x = 7;
         pivot = new THREE.Group();
-        scene.add(pivot);
         defaultScene = true;
     };
 
@@ -140,10 +139,15 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         } else {
             console.error("Failed to set camera position. Bounding box was infinity");
         }
-        scene.add(model);
+        // if the pivot has the model inside, then add the pivot to the scene
+        if(pivot.children.length > 0) {
+            scene.add(pivot);
+        } else {
+            scene.add(model);
+        }
 
         console.log("Changed model");
-        this.buildSceneTree(scene);
+        this.buildSceneTree(model);
     };
 
     this.buildSceneTree = function (scene) {
@@ -320,11 +324,11 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             }
             controls.target = cameraTarget;
             controls.update();
-            if (pivot) {
-                /* var rot = new THREE.Vector3(-thisWidget.getProperty('Roll'), thisWidget.getProperty('Heading') - 180, -thisWidget.getProperty('Pitch'));
-                 rot.multiplyScalar(Math.PI / 180);
-                 pivot.rotation.order = "YXZ";
-                 pivot.rotation.setFromVector3(rot);*/
+            if (pivot.children.length > 0) {
+                var rot = new THREE.Vector3(-thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X') - 180, -thisWidget.getProperty('Rotation Z'));
+                rot.multiplyScalar(Math.PI / 180);
+                pivot.rotation.order = "YXZ";
+                pivot.rotation.setFromVector3(rot);
             }
             renderer.render(scene, camera);
             // also render the insets if they were initialzed 
@@ -361,7 +365,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("TexturePath"));
                 break;
             case 'SelectedItem':
-                debugger;
                 // find the object that has this id
                 var selectedObject = scene.getObjectById(updatePropertyInfo.RawSinglePropertyValue);
                 if (selectedObject) {
@@ -448,8 +451,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     };
 
     this.handleSelectionUpdate = function (propertyName, selectedRows, selectedRowIndices) {
-        alert("yest");
-        debugger;
         switch (propertyName) {
             // one handle single selection
             case "SceneTree":

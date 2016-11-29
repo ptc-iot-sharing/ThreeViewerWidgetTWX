@@ -27,28 +27,6 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'defaultValue': 800,
                     'isBindingTarget': false
                 },
-                /*
-                                'Pitch': {
-                                    'description': 'Pitch of the Model',
-                                    'baseType': 'NUMBER',
-                                    'isVisible': true,
-                                    'defaultValue': 0.0,
-                                    'isBindingTarget': true
-                                },
-                                'Roll': {
-                                    'description': 'Roll of the Model',
-                                    'baseType': 'NUMBER',
-                                    'isVisible': true,
-                                    'defaultValue': 0.0,
-                                    'isBindingTarget': true
-                                },
-                                'Heading': {
-                                    'description': 'Heading of the Model',
-                                    'baseType': 'NUMBER',
-                                    'isVisible': true,
-                                    'defaultValue': 0.0,
-                                    'isBindingTarget': true
-                                },*/
                 'ModelUrl': {
                     'description': 'URL to the model',
                     'baseType': 'STRING',
@@ -229,6 +207,27 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'baseType': 'STRING',
                     'isVisible': true,
                     'defaultValue': false,
+                    'isBindingTarget': true
+                },
+                'Rotation Z': {
+                    'description': 'Rotation along the X axis of the Model',
+                    'baseType': 'NUMBER',
+                    'isVisible': true,
+                    'defaultValue': 0.0,
+                    'isBindingTarget': true
+                },
+                'Rotation Y': {
+                    'description': 'Rotation along the Y axis of the Model',
+                    'baseType': 'NUMBER',
+                    'isVisible': true,
+                    'defaultValue': 0.0,
+                    'isBindingTarget': true
+                },
+                'Rotation X': {
+                    'description': 'Rotation along the Z axis of the Model',
+                    'baseType': 'NUMBER',
+                    'isVisible': true,
+                    'defaultValue': 0.0,
                     'isBindingTarget': true
                 },
                 'BackgroundStyle': {
