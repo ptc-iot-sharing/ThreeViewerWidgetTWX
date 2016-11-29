@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.1.60" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.1.62" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -48,15 +48,11 @@
         <FileResource type="JS" file="loaders/RGBELoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/STLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/SVGLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/GLTFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/TGALoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/UTF8Loader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/VRMLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/VTKLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/gltf/glTF0-parser.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/gltf/glTF3Animation.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/gltf/glTF1Loader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/gltf/glTF2LoaderUtils.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/gltf/glTF4Shaders.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/sea3d/SEA3D.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/sea3d/SEA3DDeflate.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/sea3d/SEA3DLoader.js" description="" isDevelopment="false" isRuntime="true"/>

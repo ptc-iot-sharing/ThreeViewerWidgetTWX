@@ -90,7 +90,7 @@ var Loader = function (widget) {
 				break;
 
 			case 'gltf':
-				new THREE.glTFLoader().load(url, function (collada) {
+				new THREE.GLTFLoader().load(url, function (collada) {
 					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
