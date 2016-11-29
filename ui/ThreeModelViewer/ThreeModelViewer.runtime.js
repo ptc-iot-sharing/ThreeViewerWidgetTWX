@@ -23,6 +23,26 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         color: 0x00d9ff
     });
 
+    var sceneTreeDataShape = {
+        fieldDefinitions: {
+            "name": {
+                "name": "name",
+                "baseType": "STRING",
+                "aspects": ""
+            },
+            "id": {
+                "name": "id",
+                "baseType": "STRING",
+                "aspects": ""
+            },
+            "parentId": {
+                "name": "parentId",
+                "baseType": "STRING",
+                "aspects": ""
+            }
+        }
+    };
+
     var renderRequest;
     /**
      * Initialize the default scene for viweing single models
@@ -149,25 +169,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             name: 'Root'
         })
         this.setProperty("SceneTree", {
-            dataShape: {
-                fieldDefinitions: {
-                    "name": {
-                        "name": "name",
-                        "baseType": "STRING",
-                        "aspects": ""
-                    },
-                    "id": {
-                        "name": "id",
-                        "baseType": "STRING",
-                        "aspects": ""
-                    },
-                    "parentId": {
-                        "name": "parentId",
-                        "baseType": "STRING",
-                        "aspects": ""
-                    }
-                }
-            },
+            dataShape: sceneTreeDataShape,
             rows: objectArray
         });
     };
@@ -336,6 +338,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 stats.end();
             }
         };
+        this.setProperty("SceneTree", {
+            dataShape: sceneTreeDataShape,
+            rows: []
+        });
         // if we had a model set, then attempt to load it
         if (thisWidget.getProperty("ModelUrl")) {
             loader.loadFile(thisWidget.getProperty("ModelType"), thisWidget.getProperty("ModelUrl"), thisWidget.getProperty("TexturePath"));
@@ -355,6 +361,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("TexturePath"));
                 break;
             case 'SelectedItem':
+                debugger;
                 // find the object that has this id
                 var selectedObject = scene.getObjectById(updatePropertyInfo.RawSinglePropertyValue);
                 if (selectedObject) {
