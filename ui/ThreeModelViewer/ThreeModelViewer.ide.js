@@ -1,9 +1,9 @@
-TW.IDE.Widgets.ThreeModelViewer = function() {
+TW.IDE.Widgets.ThreeModelViewer = function () {
 
-    this.widgetIconUrl = function() {
+    this.widgetIconUrl = function () {
         return "../Common/extensions/ThreeModelViewer_ExtensionPackage/ui/ThreeModelViewer/ThreeModelViewer.png";
     };
-    this.widgetProperties = function() {
+    this.widgetProperties = function () {
         return {
             'name': 'Three Model Viewer',
             'description': 'Three Js based 3d Model viewr',
@@ -182,12 +182,34 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'defaultValue': false,
                     'isBindingTarget': true
                 },
-                'SelectedItem': {
-                    'description': 'The id currently selected item in the scene',
-                    'baseType': 'INTEGER',
+                'ShowStats': {
+                    'description': 'Show render statistics (FPS, memory, CPU)',
+                    'baseType': 'BOOLEAN',
                     'isVisible': true,
                     'defaultValue': false,
-                    'isBindingSource': true
+                    'isBindingTarget': true
+                },
+                'LightIntensity': {
+                    'description': 'The intensity of the light. Use a value between 0 and 1',
+                    'baseType': 'NUMBER',
+                    'isVisible': true,
+                    'defaultValue': 0.8,
+                    'isBindingTarget': true
+                },
+                'SceneTree': {
+                    'description': 'A tree of all the elements in the scene',
+                    'baseType': 'INFOTABLE',
+                    'isVisible': true,
+                    'isBindingSource': true,
+                    'isBindingTarget': true
+                },
+                'SelectedItem': {
+                    'description': 'The id currently selected item in the scene',
+                    'baseType': 'STRING',
+                    'isVisible': true,
+                    'defaultValue': false,
+                    'isBindingSource': true,
+                    'isBindingTarget': true
                 },
                 'SelectedItemName': {
                     'description': 'The name currently selected item in the scene',
@@ -202,7 +224,7 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
                     'isVisible': true,
                     'defaultValue': false,
                     'isBindingTarget': true
-                },                
+                },
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
@@ -213,7 +235,29 @@ TW.IDE.Widgets.ThreeModelViewer = function() {
         };
     };
 
-    this.renderHtml = function() {
+    this.renderHtml = function () {
         return '<div class="widget-content widget-model-viewer"></div>';
     };
+
+    this.getSourceDatashapeName = function (propertyName) {
+        switch (propertyName) {
+            case "SceneTree":
+                return {
+                    "name": {
+                        "name": "name",
+                        "baseType": "STRING"
+                    },
+                    "id": {
+                        "name": "id",
+                        "baseType": "STRING"
+                    },
+                    "parentId": {
+                        "name": "parentId",
+                        "baseType": "STRING"
+                    }
+                }
+            default:
+                break;
+        }
+    }
 };

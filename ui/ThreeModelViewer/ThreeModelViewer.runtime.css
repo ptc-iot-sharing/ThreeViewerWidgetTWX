@@ -26,3 +26,7 @@
   z-index: 100;
   pointer-events: none;
 }
+
+.stats > div {
+  position: relative !important;
+}

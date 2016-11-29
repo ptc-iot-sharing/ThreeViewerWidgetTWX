@@ -1,4 +1,4 @@
-TW.Runtime.Widgets.ThreeModelViewer = function() {
+TW.Runtime.Widgets.ThreeModelViewer = function () {
     var thisWidget = this;
     // controls of the OrbitControls and EventsControls
     var controls, eventControls;
@@ -16,12 +16,18 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
     var defaultScene = false;
     // needed for the inset Rendering
     var insetRenderer, insetCamera, insetScene;
+    // if we need to display stats
+    var stats;
+    // used to illustrate selection
+    var selMaterial = new THREE.MeshPhongMaterial({
+        color: 0x00d9ff
+    });
 
     var renderRequest;
     /**
      * Initialize the default scene for viweing single models
      */
-    this.initializeScene = function() {
+    this.initializeScene = function () {
         scene = new THREE.Scene();
 
         /// Global : group
@@ -47,17 +53,18 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
     /**
      * Adds lights to the scene. This includes abient lights and directional lights in each corner
      */
-    this.addLights = function() {
+    this.addLights = function () {
         /// ambient light
         var ambientLight = new THREE.AmbientLight(0x404040); //, 0.8);
         scene.add(ambientLight);
         //
 
         /// light in every corner
-        var directionalLight = new THREE.DirectionalLight(0xa6a6a6, 1);
+        var lightIntensity = thisWidget.getProperty("LightIntensity") ? thisWidget.getProperty("LightIntensity") : 0.8;
+        var directionalLight = new THREE.DirectionalLight(0xa6a6a6, lightIntensity);
         directionalLight.position.set(0, 1, 0);
 
-        var dl1 = new THREE.DirectionalLight(0xa6a6a6, 0.8);
+        var dl1 = new THREE.DirectionalLight(0xa6a6a6, lightIntensity);
         var dl2 = dl1.clone();
         var dl3 = dl1.clone();
         var dl4 = dl1.clone();
@@ -70,37 +77,20 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         scene.add(directionalLight, dl1, dl2, dl3, dl4);
     };
 
-    function listVisibleObjects(visibleObjects, object) {
-        //scene.updateMatrixWorld(); // unneeded?
-        for (var i = 0; i < object.children.length; i++) {
-            if (object.children[i].visible !== undefined && object.children[i].visible) {
-                if (object.children[i].children.length !== 0) {
-                    listVisibleObjects(visibleObjects, object.children[i]);
-                } else {
-                    // Limit to mesh otherwise bounding box is picked
-                    if (1) {
-                        visibleObjects.push(object.children[i]);
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Adds a new object to the scene. It first attempts to place it in the origin, then positions the camera in its best position to view it
      */
-    this.addObjectCommand = function(model) {
+    this.addObjectCommand = function (model) {
         if (!defaultScene || thisWidget.getProperty("ResetSceneOnModelChange")) {
             thisWidget.initializeScene();
         }
 
         if (eventControls) {
-            var visibleObjects = [];
-            listVisibleObjects(visibleObjects, model);
-
-            for (var i = 0; i < visibleObjects.length; i++) {
-                eventControls.attach(visibleObjects[i]);
-            }
+            model.traverseVisible(function (child) {
+                if (child.isMesh) {
+                    eventControls.attach(child);
+                }
+            });
         }
 
         var bbox = new THREE.Box3().setFromObject(model);
@@ -133,20 +123,66 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         scene.add(model);
 
         console.log("Changed model");
+        this.buildSceneTree(scene);
+    };
+
+    this.buildSceneTree = function (scene) {
+        var objectArray = [];
+        (function addObjects(objects) {
+            for (var i = 0; i < objects.length; i++) {
+
+                var object = objects[i];
+                if (object && object.name != '') {
+                    objectArray.push({
+                        id: object.uuid,
+                        parentId: object.parent ? object.parent.uuid : 'root',
+                        name: object.name
+                    });
+                }
+                addObjects(object.children);
+            }
+
+        })(scene.children);
+        objectArray.push({
+            id: scene.uuid,
+            parentId: 'root',
+            name: 'Root'
+        })
+        this.setProperty("SceneTree", {
+            dataShape: {
+                fieldDefinitions: {
+                    "name": {
+                        "name": "name",
+                        "baseType": "STRING",
+                        "aspects": ""
+                    },
+                    "id": {
+                        "name": "id",
+                        "baseType": "STRING",
+                        "aspects": ""
+                    },
+                    "parentId": {
+                        "name": "parentId",
+                        "baseType": "STRING",
+                        "aspects": ""
+                    }
+                }
+            },
+            rows: objectArray
+        });
     };
 
     /**
      * Sets a new scene 
      */
-    this.setSceneCommand = function(sceneObject) {
+    this.setSceneCommand = function (sceneObject) {
         scene = sceneObject;
-         if (eventControls) {
-            var visibleObjects = [];
-            listVisibleObjects(visibleObjects, sceneObject);
-
-            for (var i = 0; i < visibleObjects.length; i++) {
-                eventControls.attach(visibleObjects[i]);
-            }
+        if (eventControls) {
+            sceneObject.traverseVisible(function (child) {
+                if (child.isMesh) {
+                    eventControls.attach(child);
+                }
+            });
         }
         if (thisWidget.getProperty("AddLightsToSceneFiles")) {
             thisWidget.addLights();
@@ -160,22 +196,23 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         }
         defaultScene = false;
         console.log("Changed Scene");
+        this.buildSceneTree(scene);
     };
 
     /**
      * Set the camera position 
      */
-    this.setCameraCommand = function(newCamera) {
+    this.setCameraCommand = function (newCamera) {
         camera.position.copy(newCamera.position);
         camera.rotation.copy(newCamera.rotation);
     };
 
     // the html is really simple. Just a ccanvas
-    this.renderHtml = function() {
-        return '<div class="widget-content widget-ThreeModelViewer"><canvas></canvas><div class="inset"></div></div>';
+    this.renderHtml = function () {
+        return '<div class="widget-content widget-ThreeModelViewer"><canvas></canvas><div class="inset"></div><div class="stats"></div></div>';
     };
 
-    this.afterRender = function() {
+    this.afterRender = function () {
         if (!Detector.webgl) Detector.addGetWebGLMessage();
 
         var canvas = this.jqElement.find("canvas").get(0);
@@ -190,6 +227,11 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         canvas.height = canvas.clientHeight * window.devicePixelRatio;
         camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
 
+        if (thisWidget.getProperty("ShowStats")) {
+            stats = new Stats();
+            this.jqElement.find(".stats").append(stats.dom);
+        }
+
         if (thisWidget.getProperty("DrawAxisHelpers")) {
             setupInset();
         }
@@ -200,7 +242,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             var height = element.clientHeight * window.devicePixelRatio;
             var width = element.clientWidth * window.devicePixelRatio;
 
-            return setInterval(function() {
+            return setInterval(function () {
                 if (element.clientHeight != height || element.clientWidth != width) {
                     height = element.clientHeight * window.devicePixelRatio;
                     width = element.clientWidth * window.devicePixelRatio;
@@ -208,7 +250,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
                 }
             }, 500);
         }
-        onResize(canvas, function() {
+        onResize(canvas, function () {
             canvas.width = canvas.clientWidth * window.devicePixelRatio;
             canvas.height = canvas.clientHeight * window.devicePixelRatio;
             renderer.setViewport(0, 0, canvas.clientWidth * window.devicePixelRatio, canvas.clientHeight * window.devicePixelRatio);
@@ -230,28 +272,27 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
 
         if (thisWidget.getProperty('EnableSelection')) {
             eventControls = new EventsControls(camera, renderer.domElement);
-            var selMaterial = new THREE.MeshPhongMaterial({
-                color: 0x00d9ff
-            });
 
-            eventControls.attachEvent('mouseOver', function() {
+            eventControls.attachEvent('mouseOver', function () {
                 this.container.style.cursor = 'pointer';
                 this.mouseOvered.oldMaterial = this.mouseOvered.material;
                 this.mouseOvered.material = selMaterial;
-               // console.log('the key at number ' + this.event.item + ' is select');
 
             });
 
-            eventControls.attachEvent('mouseOut', function() {
-               // this.container.style.cursor = 'auto';
+            eventControls.attachEvent('mouseOut', function () {
                 this.mouseOvered.material = this.mouseOvered.oldMaterial;
-
             });
 
-            eventControls.attachEvent('onclick', function() {
-               // console.log('the key at number ' + this.event.item + ' is pressed');
+            eventControls.attachEvent('onclick', function () {
                 thisWidget.setProperty("SelectedItem", this.event.item);
-                thisWidget.setProperty("SelectedItemName", this.event.object.name);
+                var objectName;
+                if (this.event.object.name) {
+                    objectName = this.event.object.name;
+                } else {
+                    objectName = this.event.object.parent.name;
+                }
+                thisWidget.setProperty("SelectedItemName", objectName);
             });
         }
         if (!thisWidget.getProperty("CameraControls")) {
@@ -270,8 +311,11 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         var wt = document.getElementById(domElementId);
         wt.appendChild(renderer.domElement);
 
-        var render = function() {
+        var render = function () {
             renderRequest = requestAnimationFrame(render);
+            if (stats) {
+                stats.begin();
+            }
             controls.target = cameraTarget;
             controls.update();
             if (pivot) {
@@ -288,6 +332,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
             if (eventControls) {
                 eventControls.update();
             }
+            if (stats) {
+                stats.end();
+            }
         };
         // if we had a model set, then attempt to load it
         if (thisWidget.getProperty("ModelUrl")) {
@@ -298,17 +345,30 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
     };
 
 
-    this.updateProperty = function(updatePropertyInfo) {
+    this.updateProperty = function (updatePropertyInfo) {
         thisWidget.setProperty(updatePropertyInfo.TargetProperty, updatePropertyInfo.RawSinglePropertyValue);
-        if (updatePropertyInfo.TargetProperty === "BackgroundStyle") {
-            handleBackgroundColor();
-        }
-        if (updatePropertyInfo.TargetProperty === "ModelUrl") {
-            loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("TexturePath"));
+        switch (updatePropertyInfo.TargetProperty) {
+            case "BackgroundStyle":
+                handleBackgroundColor();
+                break;
+            case "ModelUrl":
+                loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("TexturePath"));
+                break;
+            case 'SelectedItem':
+                // find the object that has this id
+                var selectedObject = scene.getObjectById(updatePropertyInfo.RawSinglePropertyValue);
+                if (selectedObject) {
+                    selectedObject.oldMaterial = selectedObject.material;
+                    selectedObject.material = selMaterial;
+                }
+                break;
+
+            default:
+                break;
         }
     };
 
-    this.clearScene = function() {
+    this.clearScene = function () {
         for (var i = scene.children.length - 1; i >= 0; i--) {
             obj = scene.children[i];
             scene.remove(obj);
@@ -378,8 +438,28 @@ TW.Runtime.Widgets.ThreeModelViewer = function() {
         insetCamera.lookAt(insetScene.position);
 
         insetRenderer.render(insetScene, insetCamera);
-    }
-    this.beforeDestroy = function() {
+    };
+
+    this.handleSelectionUpdate = function (propertyName, selectedRows, selectedRowIndices) {
+        alert("yest");
+        debugger;
+        switch (propertyName) {
+            // one handle single selection
+            case "SceneTree":
+                if (selectedRows.length > 0) {
+                    // find the object that has this id
+                    var selectedObject = scene.getObjectById(selectedRows[0].id);
+                    selectedObject.oldMaterial = selectedObject.material;
+                    selectedObject.material = selMaterial;
+                }
+                break;
+
+            default:
+                break;
+        }
+    };
+
+    this.beforeDestroy = function () {
         window.cancelAnimationFrame(renderRequest);
     };
 
