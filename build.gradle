@@ -113,7 +113,7 @@ task packageExtension(type: Zip, dependsOn: prepPackage, overwrite: true) {
 task upload(dependsOn: packageExtension) {
   doLast{
     def http = new HTTPBuilder("${thingworxServerRoot}/Thingworx/")
-
+    http.ignoreSSLIssues()
     def extZip = file("${baseDir}/zip/${project.name}.zip")
 
     http.request(POST) { req ->
@@ -126,13 +126,11 @@ task upload(dependsOn: packageExtension) {
         req.setEntity(entity)
         response.success = {resp ->
             println("Upload successful!")
-            System.exit(0)
         }
 
         response.failure = {resp ->
             println(resp.statusLine)
             throw new StopExecutionException("Thingworx upload failed! See server response above")
-            System.exit(0)
         }
     }
   }
