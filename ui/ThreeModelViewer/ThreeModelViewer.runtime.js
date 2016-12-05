@@ -147,7 +147,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         }
 
         console.log("Changed model");
-        this.buildSceneTree(model);
+        thisWidget.buildSceneTree(model);
     };
 
     this.buildSceneTree = function (scene) {
@@ -202,7 +202,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         }
         defaultScene = false;
         console.log("Changed Scene");
-        this.buildSceneTree(scene);
+        thisWidget.buildSceneTree(scene);
     };
 
     /**
