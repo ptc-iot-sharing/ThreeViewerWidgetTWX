@@ -180,13 +180,6 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'isVisible': true,
                     'isBindingSource': true
                 },
-                'SceneTree2': {
-                    'description': 'A tree of all the elements in the scene',
-                    'baseType': 'INFOTABLE',
-                    'isVisible': true,
-                    'isBindingSource': true,
-                    'isBindingTarget': true
-                },
                 'SelectedItem': {
                     'description': 'The id currently selected item in the scene',
                     'baseType': 'STRING',

@@ -123,9 +123,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
 
         // make sure that the bbox is not infinity
         if (isFinite(bbox.max.length())) {
-            bbox.center(model.position); // this re-sets the model position
+            bbox.getCenter(model.position); // this re-sets the model position
             model.position.multiplyScalar(-1);
-            model.position.y = -bbox.min.y;
+            pivot.position.y = bbox.max.y / 2;
             pivot.add(model);
             cameraTarget.y = (bbox.max.y - bbox.min.y) / 2;
             var cameraPos = bbox.min.clone();
@@ -134,13 +134,13 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             cameraPos.y = Math.abs(cameraPos.y);
             cameraPos.z = Math.abs(cameraPos.z);
 
-            cameraPos.setLength(cameraPos.length() * 2.5);
+            cameraPos.setLength(cameraPos.length() * 2.6);
             camera.position.copy(cameraPos);
         } else {
             console.error("Failed to set camera position. Bounding box was infinity");
         }
         // if the pivot has the model inside, then add the pivot to the scene
-        if(pivot.children.length > 0) {
+        if (pivot.children.length > 0) {
             scene.add(pivot);
         } else {
             scene.add(model);
@@ -325,7 +325,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             controls.target = cameraTarget;
             controls.update();
             if (pivot.children.length > 0) {
-                var rot = new THREE.Vector3(-thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X') - 180, -thisWidget.getProperty('Rotation Z'));
+                var rot = new THREE.Vector3(thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X'), thisWidget.getProperty('Rotation Z'));
                 rot.multiplyScalar(Math.PI / 180);
                 pivot.rotation.order = "YXZ";
                 pivot.rotation.setFromVector3(rot);
@@ -372,7 +372,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     selectedObject.material = selMaterial;
                 }
                 break;
-
             default:
                 break;
         }
