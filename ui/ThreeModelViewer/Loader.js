@@ -29,6 +29,11 @@ var Loader = function (widget) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 				break;
+			case 'assimp':
+				new THREE.AssimpLoader().load(url, function (error, model) {
+					callback ? callback() : widget.addObjectCommand(model);
+				});
+				break;
 			case 'awd':
 				new THREE.AWDLoader().load(url, function (scene) {
 					callback ? callback() : widget.setSceneCommand(scene);
@@ -43,7 +48,7 @@ var Loader = function (widget) {
 				break;
 
 			case 'babylonmeshdata':
-				new THREE.XHRLoader().load(url, function name(text) {
+				new THREE.FileLoader().load(url, function name(text) {
 					var json = JSON.parse(text);
 
 					var loader = new THREE.BabylonLoader();
@@ -104,7 +109,7 @@ var Loader = function (widget) {
 			case '3obj':
 			case '3scn':
 
-				new THREE.XHRLoader().load(url, function name(contents) {
+				new THREE.FileLoader().load(url, function name(contents) {
 
 					// 2.0
 
