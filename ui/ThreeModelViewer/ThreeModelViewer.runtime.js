@@ -325,10 +325,22 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             controls.target = cameraTarget;
             controls.update();
             if (pivot.children.length > 0) {
-                var rot = new THREE.Vector3(thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X'), thisWidget.getProperty('Rotation Z'));
-                rot.multiplyScalar(Math.PI / 180);
-                pivot.rotation.order = "YXZ";
-                pivot.rotation.setFromVector3(rot);
+                if (thisWidget.getProperty('EnableQuaternionRotation')) {
+                    // build the quat from the string property
+                    var tokens = (thisWidget.getProperty("Quaternion") || "").split(",");
+                    if (tokens.length === 4) {
+                        tokens = tokens.map(function(x){
+                            return parseFloat(x.trim());
+                        });
+                        var q = new THREE.Quaternion(tokens[0],tokens[1],tokens[2],tokens[3]);
+                        pivot.setRotationFromQuaternion(q);
+                    }
+                } else {
+                    var rot = new THREE.Vector3(thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X'), thisWidget.getProperty('Rotation Z'));
+                    rot.multiplyScalar(Math.PI / 180);
+                    pivot.rotation.order = "YXZ";
+                    pivot.rotation.setFromVector3(rot);
+                }
             }
             renderer.render(scene, camera);
             // also render the insets if they were initialzed 

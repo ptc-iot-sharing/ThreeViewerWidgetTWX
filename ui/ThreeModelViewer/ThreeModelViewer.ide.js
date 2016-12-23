@@ -223,6 +223,20 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'defaultValue': 0.0,
                     'isBindingTarget': true
                 },
+                'Quaternion': {
+                    'description': 'Rotation Quaternion for the model',
+                    'baseType': 'STRING',
+                    'isVisible': true,
+                    'defaultValue': 0.0,
+                    'isBindingTarget': true
+                },
+                'EnableQuaternionRotation': {
+                    'description': 'Use Quaternions for rotation rather than eulers',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': false,
+                    'isBindingTarget': true
+                },                
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
