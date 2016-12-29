@@ -230,6 +230,13 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'defaultValue': 0.0,
                     'isBindingTarget': true
                 },
+                'ModelYOffset': {
+                    'description': 'Positions the model on a Y offset vs the grid',
+                    'baseType': 'NUMBER',
+                    'isVisible': true,
+                    'defaultValue': 0.0,
+                    'isBindingTarget': true
+                },
                 'EnableQuaternionRotation': {
                     'description': 'Use Quaternions for rotation rather than eulers',
                     'baseType': 'BOOLEAN',

@@ -125,7 +125,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         if (isFinite(bbox.max.length())) {
             bbox.getCenter(model.position); // this re-sets the model position
             model.position.multiplyScalar(-1);
-            pivot.position.y = bbox.max.y / 2;
+            pivot.position.y = bbox.max.y / 2 + (thisWidget.getProperty("ModelYOffset") || 0);
             pivot.add(model);
             cameraTarget.y = (bbox.max.y - bbox.min.y) / 2;
             var cameraPos = bbox.min.clone();
@@ -329,10 +329,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     // build the quat from the string property
                     var tokens = (thisWidget.getProperty("Quaternion") || "").split(",");
                     if (tokens.length === 4) {
-                        tokens = tokens.map(function(x){
+                        tokens = tokens.map(function (x) {
                             return parseFloat(x.trim());
                         });
-                        var q = new THREE.Quaternion(tokens[0],tokens[1],tokens[2],tokens[3]);
+                        var q = new THREE.Quaternion(tokens[0], tokens[1], tokens[2], tokens[3]);
                         pivot.setRotationFromQuaternion(q);
                     }
                 } else {
@@ -459,7 +459,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         insetCamera.lookAt(insetScene.position);
 
         insetRenderer.render(insetScene, insetCamera);
-    };
+    }
 
     this.handleSelectionUpdate = function (propertyName, selectedRows, selectedRowIndices) {
         switch (propertyName) {
