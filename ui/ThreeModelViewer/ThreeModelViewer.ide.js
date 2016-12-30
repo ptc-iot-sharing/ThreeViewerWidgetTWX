@@ -243,7 +243,7 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'isVisible': true,
                     'defaultValue': false,
                     'isBindingTarget': true
-                },                
+                },
                 'BackgroundStyle': {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
@@ -256,6 +256,17 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
 
     this.renderHtml = function () {
         return '<div class="widget-content widget-model-viewer"></div>';
+    };
+
+    this.widgetEvents = function () {
+        return {
+            'LoadDone': {
+                'warnIfNotBound': false
+            },
+            'LoadError': {
+                'warnIfNotBound': false
+            }
+        };
     };
 
     this.getSourceDatashapeName = function (propertyName) {
@@ -274,9 +285,9 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                         "name": "parentId",
                         "baseType": "STRING"
                     }
-                }
+                };
             default:
                 break;
         }
-    }
+    };
 };

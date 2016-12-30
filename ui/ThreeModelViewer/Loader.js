@@ -230,31 +230,34 @@ var Loader = function (widget) {
 			case 'ol':
 			case 'pvt':
 			case 'pvz':
+			    var loadingManager = THREE.DefaultLoadingManager;
+				loadingManager.itemStart(url);
 				function loadPvzFile(file, successCallback, failCallback) {
 					try {
 						var createhierarchy = true;
 						CVThreeLoader.LoadModel(file, function (obj) {
+								loadingManager.itemEnd( url );
 								successCallback(obj);
 							},
 							function (obj) {
+								loadingManager.itemError(url);
 								if (failCallback) failCallback();
 							},
 							createhierarchy);
 					} catch (e) {
 						console.error('CVThreeLoader::LoadModel failed. Error: %o', e);
+						loadingManager.itemError(url);
 						if (failCallback) failCallback();
 					} finally {
 
 					}
 				}
 
-
 				// wait a bit because we can get a error Assertion failed: you need to wait for the runtime to be ready (e.g. wait for main() to be called)
-
 				if (window.cvApiInited) {
 					setTimeout(function () {
 						loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function () {
-							alert("Failed to load the PVZ");
+							//alert("Failed to load the PVZ");
 						});
 					}, 200);
 				} else {
@@ -264,7 +267,7 @@ var Loader = function (widget) {
 
 						setTimeout(function () {
 							loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function () {
-								alert("Failed to load the PVZ");
+								//alert("Failed to load the PVZ");
 							});
 						}, 200);
 

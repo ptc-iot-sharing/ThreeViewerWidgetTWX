@@ -171,7 +171,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             id: scene.uuid,
             parentId: 'root',
             name: 'Root'
-        })
+        });
         this.setProperty("SceneTree", {
             dataShape: sceneTreeDataShape,
             rows: objectArray
@@ -215,7 +215,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
 
     // the html is really simple. Just a ccanvas
     this.renderHtml = function () {
-        return '<div class="widget-content widget-ThreeModelViewer"><canvas></canvas><div class="inset"></div><div class="stats"></div></div>';
+        return '<div class="widget-content widget-ThreeModelViewer"><div class="spinner"></div><canvas></canvas><div class="inset"></div><div class="stats"></div></div>';
     };
 
     this.afterRender = function () {
@@ -241,6 +241,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         if (thisWidget.getProperty("DrawAxisHelpers")) {
             setupInset();
         }
+        setupLoadEvents();
 
         // whenever the canvas resizes, we must be responsive.
         // so watch for canvas resizes via an interval
@@ -459,6 +460,32 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         insetCamera.lookAt(insetScene.position);
 
         insetRenderer.render(insetScene, insetCamera);
+    }
+
+    function setupLoadEvents() {
+        THREE.DefaultLoadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+            console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+            if (thisWidget.getProperty("ShowDataLoading")) {
+                thisWidget.jqElement.find('.spinner').show();
+            }
+        };
+
+        THREE.DefaultLoadingManager.onLoad = function () {
+            console.log('Loading Complete!');
+            thisWidget.jqElement.find('.spinner').hide();
+        };
+
+
+        THREE.DefaultLoadingManager.onProgress = function (url, itemsLoaded, itemsTotal) {
+            console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+            thisWidget.jqElement.triggerHandler('LoadDone');
+        };
+
+        THREE.DefaultLoadingManager.onError = function (url) {
+            console.log('There was an error loading ' + url);
+            thisWidget.jqElement.find('.spinner').hide();
+            thisWidget.jqElement.triggerHandler('LoadError');
+        };
     }
 
     this.handleSelectionUpdate = function (propertyName, selectedRows, selectedRowIndices) {
