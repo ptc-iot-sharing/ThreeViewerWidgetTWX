@@ -224,7 +224,7 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'isBindingTarget': true
                 },
                 'Quaternion': {
-                    'description': 'Rotation Quaternion for the model',
+                    'description': 'Rotation Quaternion for the model. Represented as comma sepparated X,Y,Z,W',
                     'baseType': 'STRING',
                     'isVisible': true,
                     'defaultValue': 0.0,
