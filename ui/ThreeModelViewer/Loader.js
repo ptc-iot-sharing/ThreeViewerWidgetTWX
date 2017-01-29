@@ -30,9 +30,10 @@ var Loader = function (widget) {
 				});
 				break;
 			case 'assimp':
-				//TODO: support animations
 				new THREE.AssimpLoader().load(url, function (error, model) {
-					callback ? callback() : widget.addObjectCommand(model);
+					callback ? callback() : widget.addObjectCommand(model.object, function() {
+						model.animation.setTime(performance.now()/1000);
+					});
 				});
 				break;
 			case 'awd':
