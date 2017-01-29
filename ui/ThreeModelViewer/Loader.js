@@ -96,19 +96,33 @@ var Loader = function (widget) {
 			case 'fbx':
 				var fbxLoader = new THREE.FBXLoader();
 				// TODO: setting the texture path is no longer supported in FBXLoader2
-				// TODO: support animations
-				fbxLoader.load(url, function (model) {
-					callback ? callback() : widget.addObjectCommand(model);
+				// if we already have a mixer set, then reuse it
+				if (mixer) {
+					mixer.stopAllAction();
+				}
+				var clock = new THREE.Clock();
+				fbxLoader.load(url, function (object) {
+					var animations = object.animations;
+					if (animations && animations.length) {
+						mixer = new THREE.AnimationMixer(object);
+						for (var i = 0; i < animations.length; i++) {
+							mixer.clipAction(animations[i]).play();
+						}
+					}
+					callback ? callback() : widget.addObjectCommand(object, function () {
+						if (mixer) {
+							mixer.update(clock.getDelta());
+						}
+					})
 				});
 
 				break;
 
 			case 'glb':
 			case 'gltf':
-				// TODO: support animations
 				new THREE.GLTFLoader().load(url, function (gltf) {
 					// if we already have a mixer set, then reuse it
-					if(mixer) {
+					if (mixer) {
 						mixer.stopAllAction();
 					}
 					var object = gltf.scene !== undefined ? gltf.scene : gltf.scenes[0];
@@ -121,7 +135,9 @@ var Loader = function (widget) {
 					}
 					var clock = new THREE.Clock();
 					callback ? callback() : widget.addObjectCommand(object, function (scene, camera) {
-						if (mixer) mixer.update(clock.getDelta());
+						if (mixer) {
+							mixer.update(clock.getDelta());
+						}
 						THREE.GLTFLoader.Shaders.update(scene, camera);
 					});
 				});
