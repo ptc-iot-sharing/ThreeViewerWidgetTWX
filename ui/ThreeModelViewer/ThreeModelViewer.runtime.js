@@ -50,6 +50,8 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
      * Initialize the default scene for viweing single models
      */
     this.initializeScene = function () {
+        renderCallbacks = [];
+
         scene = new THREE.Scene();
 
         /// Global : group
@@ -106,7 +108,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             thisWidget.initializeScene();
         }
         // if we have a callback set, then add it to the list
-        if(renderCallback) {
+        if (renderCallback) {
             renderCallbacks.push(renderCallback);
         }
 
@@ -282,7 +284,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         thisWidget.initializeScene();
         // add the orbit controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
-        renderCallbacks = [];
 
         if (thisWidget.getProperty('EnableSelection')) {
             eventControls = new EventsControls(camera, renderer.domElement);
@@ -351,7 +352,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 }
             }
             // call each callback that came from the model
-            for(var i =0;i<renderCallbacks.length;i++) {
+            for (var i = 0; i < renderCallbacks.length; i++) {
                 renderCallbacks[i](scene, camera);
             }
             renderer.render(scene, camera);

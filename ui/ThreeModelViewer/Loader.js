@@ -8,6 +8,9 @@ var Loader = function (widget) {
 
 	this.texturePath = '';
 
+	// animation mixer used for all the models
+	var mixer;
+
 	this.loadFile = function (modelType, url, texturePath, callback) {
 
 		var extension = modelType == "Auto-Detect" ? url.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
@@ -31,8 +34,9 @@ var Loader = function (widget) {
 				break;
 			case 'assimp':
 				new THREE.AssimpLoader().load(url, function (error, model) {
-					callback ? callback() : widget.addObjectCommand(model.object, function() {
-						model.animation.setTime(performance.now()/1000);
+					var clock = new THREE.Clock();
+					callback ? callback() : widget.addObjectCommand(model.object, function () {
+						model.animation.setTime(clock.getElapsedTime());
 					});
 				});
 				break;
@@ -103,7 +107,21 @@ var Loader = function (widget) {
 			case 'gltf':
 				// TODO: support animations
 				new THREE.GLTFLoader().load(url, function (gltf) {
-					callback ? callback() : widget.addObjectCommand(gltf.scene, function (scene, camera) {
+					// if we already have a mixer set, then reuse it
+					if(mixer) {
+						mixer.stopAllAction();
+					}
+					var object = gltf.scene !== undefined ? gltf.scene : gltf.scenes[0];
+					var animations = gltf.animations;
+					if (animations && animations.length) {
+						mixer = new THREE.AnimationMixer(object);
+						for (var i = 0; i < animations.length; i++) {
+							mixer.clipAction(animations[i]).play();
+						}
+					}
+					var clock = new THREE.Clock();
+					callback ? callback() : widget.addObjectCommand(object, function (scene, camera) {
+						if (mixer) mixer.update(clock.getDelta());
 						THREE.GLTFLoader.Shaders.update(scene, camera);
 					});
 				});
