@@ -333,24 +333,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             }
             controls.target = cameraTarget;
             controls.update();
-            if (pivot.children.length > 0) {
-                if (thisWidget.getProperty('EnableQuaternionRotation')) {
-                    // build the quat from the string property
-                    var tokens = (thisWidget.getProperty("Quaternion") || "").split(",");
-                    if (tokens.length === 4) {
-                        tokens = tokens.map(function (x) {
-                            return parseFloat(x.trim());
-                        });
-                        var q = new THREE.Quaternion(tokens[0], tokens[1], tokens[2], tokens[3]);
-                        pivot.setRotationFromQuaternion(q);
-                    }
-                } else {
-                    var rot = new THREE.Vector3(thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X'), thisWidget.getProperty('Rotation Z'));
-                    rot.multiplyScalar(Math.PI / 180);
-                    pivot.rotation.order = "YXZ";
-                    pivot.rotation.setFromVector3(rot);
-                }
-            }
             // call each callback that came from the model
             for (var i = 0; i < renderCallbacks.length; i++) {
                 renderCallbacks[i](scene, camera);
@@ -395,6 +377,29 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 if (selectedObject) {
                     selectedObject.oldMaterial = selectedObject.material;
                     selectedObject.material = selMaterial;
+                }
+                break;
+            case "Rotation X":
+            case "Rotation Y":
+            case "Rotation Z":
+            case "Quaternion":
+                if (pivot.children.length > 0) {
+                    if (thisWidget.getProperty('EnableQuaternionRotation')) {
+                        // build the quat from the string property
+                        var tokens = (thisWidget.getProperty("Quaternion") || "").split(",");
+                        if (tokens.length === 4) {
+                            tokens = tokens.map(function (x) {
+                                return parseFloat(x.trim());
+                            });
+                            var q = new THREE.Quaternion(tokens[0], tokens[1], tokens[2], tokens[3]);
+                            pivot.setRotationFromQuaternion(q);
+                        }
+                    } else {
+                        var rot = new THREE.Vector3(thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X'), thisWidget.getProperty('Rotation Z'));
+                        rot.multiplyScalar(Math.PI / 180);
+                        pivot.rotation.order = "YXZ";
+                        pivot.rotation.setFromVector3(rot);
+                    }
                 }
                 break;
             default:
