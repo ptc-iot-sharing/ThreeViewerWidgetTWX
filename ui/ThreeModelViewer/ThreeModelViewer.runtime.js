@@ -22,6 +22,8 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     var selMaterial = new THREE.MeshPhongMaterial({
         color: 0x00d9ff
     });
+    // list of function callbacks that we should call each render step
+    var renderCallbacks = [];
 
     var sceneTreeDataShape = {
         fieldDefinitions: {
@@ -99,9 +101,13 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     /**
      * Adds a new object to the scene. It first attempts to place it in the origin, then positions the camera in its best position to view it
      */
-    this.addObjectCommand = function (model) {
+    this.addObjectCommand = function (model, renderCallback) {
         if (!defaultScene || thisWidget.getProperty("ResetSceneOnModelChange")) {
             thisWidget.initializeScene();
+        }
+        // if we have a callback set, then add it to the list
+        if(renderCallback) {
+            renderCallbacks.push(renderCallback);
         }
 
         if (eventControls) {
@@ -181,7 +187,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     /**
      * Sets a new scene 
      */
-    this.setSceneCommand = function (sceneObject) {
+    this.setSceneCommand = function (sceneObject, renderCallback) {
         scene = sceneObject;
         if (eventControls) {
             sceneObject.traverseVisible(function (child) {
@@ -276,6 +282,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         thisWidget.initializeScene();
         // add the orbit controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
+        renderCallbacks = [];
 
         if (thisWidget.getProperty('EnableSelection')) {
             eventControls = new EventsControls(camera, renderer.domElement);
@@ -342,6 +349,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     pivot.rotation.order = "YXZ";
                     pivot.rotation.setFromVector3(rot);
                 }
+            }
+            // call each callback that came from the model
+            for(var i =0;i<renderCallbacks.length;i++) {
+                renderCallbacks[i](scene, camera);
             }
             renderer.render(scene, camera);
             // also render the insets if they were initialzed 

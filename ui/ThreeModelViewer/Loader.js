@@ -30,7 +30,7 @@ var Loader = function (widget) {
 				});
 				break;
 			case 'assimp':
-			//TODO: support animations
+				//TODO: support animations
 				new THREE.AssimpLoader().load(url, function (error, model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
@@ -80,7 +80,9 @@ var Loader = function (widget) {
 				break;
 
 			case 'dae':
-				new THREE.ColladaLoader().load(url, function (collada) {
+				var colladaLoader = new THREE.ColladaLoader();
+				colladaLoader.options.convertUpAxis = true;
+				colladaLoader.load(url, function (collada) {
 					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
 
@@ -95,12 +97,14 @@ var Loader = function (widget) {
 				});
 
 				break;
-			
+
 			case 'glb':
 			case 'gltf':
 				// TODO: support animations
-				new THREE.GLTFLoader().load(url, function (collada) {
-					callback ? callback() : widget.addObjectCommand(collada.scene);
+				new THREE.GLTFLoader().load(url, function (gltf) {
+					callback ? callback() : widget.addObjectCommand(gltf.scene, function (scene, camera) {
+						THREE.GLTFLoader.Shaders.update(scene, camera);
+					});
 				});
 
 				break;
@@ -234,13 +238,14 @@ var Loader = function (widget) {
 			case 'ol':
 			case 'pvt':
 			case 'pvz':
-			    var loadingManager = THREE.DefaultLoadingManager;
+				var loadingManager = THREE.DefaultLoadingManager;
 				loadingManager.itemStart(url);
+
 				function loadPvzFile(file, successCallback, failCallback) {
 					try {
 						var createhierarchy = true;
 						CVThreeLoader.LoadModel(file, function (obj) {
-								loadingManager.itemEnd( url );
+								loadingManager.itemEnd(url);
 								successCallback(obj);
 							},
 							function (obj) {
