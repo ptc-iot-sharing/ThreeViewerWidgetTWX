@@ -1,6 +1,6 @@
 <Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.2.42" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.2.43" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -22,7 +22,6 @@
         <FileResource type="JS" file="loaders/AWDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/BabylonLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/BinaryLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/BVHLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/collada/Animation.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/collada/AnimationHandler.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/collada/KeyFrameAnimation.js" description="" isDevelopment="false" isRuntime="true"/>
@@ -37,19 +36,16 @@
         <FileResource type="JS" file="curves/NURBSCurve.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="curves/NURBSSurface.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="curves/NURBSUtils.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/HDRCubeTextureLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/KMZLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/MD2Loader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/MMDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/MTLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/NRRDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/OBJLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/PCDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/PDBLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/PlayCanvasLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/PLYLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/PVRLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/RGBELoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/STLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/SVGLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/GLTFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
