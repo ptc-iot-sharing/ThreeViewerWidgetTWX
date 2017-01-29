@@ -223,6 +223,13 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'defaultValue': 0.0,
                     'isBindingTarget': true
                 },
+                'TweenInterval': {
+                    'description': 'In miliseconds, how long should the rotation animation last',
+                    'baseType': 'NUMBER',
+                    'isVisible': true,
+                    'defaultValue': 500.0,
+                    'isBindingTarget': true
+                },
                 'Quaternion': {
                     'description': 'Rotation Quaternion for the model. Represented as comma sepparated X,Y,Z,W',
                     'baseType': 'STRING',

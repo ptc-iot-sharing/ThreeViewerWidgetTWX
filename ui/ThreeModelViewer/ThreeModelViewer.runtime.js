@@ -24,6 +24,8 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     });
     // list of function callbacks that we should call each render step
     var renderCallbacks = [];
+    // tweens for rotations
+    var tweenX, tweenY, tweenZ;
 
     var sceneTreeDataShape = {
         fieldDefinitions: {
@@ -70,6 +72,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         camera.position.y = 12;
         camera.position.x = 7;
         pivot = new THREE.Group();
+        pivot.rotation.order = "YXZ";
         defaultScene = true;
     };
 
@@ -331,6 +334,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             if (stats) {
                 stats.begin();
             }
+            TWEEN.update();
             controls.target = cameraTarget;
             controls.update();
             // call each callback that came from the model
@@ -380,8 +384,40 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 }
                 break;
             case "Rotation X":
+                if (pivot.children.length) {
+                    // rotation order is yxz, so we set into y
+                    var angleY = thisWidget.getProperty('Rotation X') * Math.PI / 180;
+                    if (tweenX) {
+                        tweenX.stop;
+                    }
+                    tweenX = new TWEEN.Tween(pivot.rotation).to({
+                        y: angleY
+                    }, thisWidget.getProperty('TweenInterval')).easing(TWEEN.Easing.Quadratic.Out).start();
+                }
+                break;
             case "Rotation Y":
+                if (pivot.children.length) {
+                    // rotation order is yxz, so we set into x
+                    var angleX = thisWidget.getProperty('Rotation Y') * Math.PI / 180;
+                    if (tweenY) {
+                        tweenY.stop;
+                    }
+                    tweenY = new TWEEN.Tween(pivot.rotation).to({
+                        x: angleX
+                    }, thisWidget.getProperty('TweenInterval')).easing(TWEEN.Easing.Quadratic.Out).start();
+                }
+                break;
             case "Rotation Z":
+                if (pivot.children.length) {
+                    var angleZ = thisWidget.getProperty('Rotation Z') * Math.PI / 180;
+                    if (tweenZ) {
+                        tweenZ.stop;
+                    }
+                    tweenZ = new TWEEN.Tween(pivot.rotation).to({
+                        z: angleZ
+                    }, thisWidget.getProperty('TweenInterval')).easing(TWEEN.Easing.Quadratic.Out).start();
+                }
+                break;
             case "Quaternion":
                 if (pivot.children.length > 0) {
                     if (thisWidget.getProperty('EnableQuaternionRotation')) {
@@ -394,11 +430,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                             var q = new THREE.Quaternion(tokens[0], tokens[1], tokens[2], tokens[3]);
                             pivot.setRotationFromQuaternion(q);
                         }
-                    } else {
-                        var rot = new THREE.Vector3(thisWidget.getProperty('Rotation Y'), thisWidget.getProperty('Rotation X'), thisWidget.getProperty('Rotation Z'));
-                        rot.multiplyScalar(Math.PI / 180);
-                        pivot.rotation.order = "YXZ";
-                        pivot.rotation.setFromVector3(rot);
                     }
                 }
                 break;
