@@ -88,7 +88,16 @@ var Loader = function (widget) {
 				var colladaLoader = new THREE.ColladaLoader();
 				colladaLoader.options.convertUpAxis = true;
 				colladaLoader.load(url, function (collada) {
-					callback ? callback() : widget.addObjectCommand(collada.scene);
+					var clock = new THREE.Clock();
+					collada.scene.traverse(function (child) {
+						if (child instanceof THREE.SkinnedMesh) {
+							var animation = new THREE.Animation(child, child.geometry.animation);
+							animation.play();
+						}
+					});
+					callback ? callback() : widget.addObjectCommand(collada.scene, function (scene, camera) {
+						THREE.AnimationHandler.update(clock.getDelta());
+					});
 				});
 
 				break;
