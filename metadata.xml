@@ -1,6 +1,6 @@
 <Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.2.0" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.2.2" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -32,7 +32,10 @@
         <FileResource type="JS" file="loaders/CVThreeLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/DDSLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/deprecated/SceneLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/FBXLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/FBXLoader2.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="curves/NURBSCurve.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="curves/NURBSSurface.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="curves/NURBSUtils.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/HDRCubeTextureLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/KMZLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/MD2Loader.js" description="" isDevelopment="false" isRuntime="true"/>

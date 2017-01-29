@@ -30,6 +30,7 @@ var Loader = function (widget) {
 				});
 				break;
 			case 'assimp':
+			//TODO: support animations
 				new THREE.AssimpLoader().load(url, function (error, model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
@@ -87,14 +88,17 @@ var Loader = function (widget) {
 
 			case 'fbx':
 				var fbxLoader = new THREE.FBXLoader();
-				fbxLoader.textureBasePath = texturePath;
+				// TODO: setting the texture path is no longer supported in FBXLoader2
+				// TODO: support animations
 				fbxLoader.load(url, function (model) {
 					callback ? callback() : widget.addObjectCommand(model);
 				});
 
 				break;
-
+			
+			case 'glb':
 			case 'gltf':
+				// TODO: support animations
 				new THREE.GLTFLoader().load(url, function (collada) {
 					callback ? callback() : widget.addObjectCommand(collada.scene);
 				});
