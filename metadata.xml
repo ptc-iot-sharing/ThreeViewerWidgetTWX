@@ -1,6 +1,6 @@
 <Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.2.2" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.2.7" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -25,7 +25,6 @@
         <FileResource type="JS" file="loaders/collada/AnimationHandler.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/collada/KeyFrameAnimation.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/ColladaLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/ColladaLoader2.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/ctm/ctm.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/ctm/CTMLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/ctm/lzma.js" description="" isDevelopment="false" isRuntime="true"/>
