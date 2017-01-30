@@ -388,7 +388,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     // rotation order is yxz, so we set into y
                     var angleY = thisWidget.getProperty('Rotation X') * Math.PI / 180;
                     if (tweenX) {
-                        tweenX.stop;
+                        tweenX.stop();
                     }
                     tweenX = new TWEEN.Tween(pivot.rotation).to({
                         y: angleY
@@ -400,7 +400,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     // rotation order is yxz, so we set into x
                     var angleX = thisWidget.getProperty('Rotation Y') * Math.PI / 180;
                     if (tweenY) {
-                        tweenY.stop;
+                        tweenY.stop();
                     }
                     tweenY = new TWEEN.Tween(pivot.rotation).to({
                         x: angleX
@@ -411,7 +411,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 if (pivot.children.length) {
                     var angleZ = thisWidget.getProperty('Rotation Z') * Math.PI / 180;
                     if (tweenZ) {
-                        tweenZ.stop;
+                        tweenZ.stop();
                     }
                     tweenZ = new TWEEN.Tween(pivot.rotation).to({
                         z: angleZ
