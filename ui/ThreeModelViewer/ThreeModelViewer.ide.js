@@ -100,6 +100,9 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     }, {
                         value: 'sea',
                         text: 'sea'
+                    },{
+                        value: 'x',
+                        text: 'x'
                     }, {
                         value: 'pvz',
                         text: 'pvz'

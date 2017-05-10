@@ -289,9 +289,9 @@ var Loader = function (widget) {
 					try {
 						var createhierarchy = true;
 						CVThreeLoader.LoadModel(file, function (obj) {
-								loadingManager.itemEnd(url);
-								successCallback(obj);
-							},
+							loadingManager.itemEnd(url);
+							successCallback(obj);
+						},
 							function (obj) {
 								loadingManager.itemError(url);
 								if (failCallback) failCallback();
@@ -378,25 +378,25 @@ var Loader = function (widget) {
 
 				break;
 
-				/*
-				case 'utf8':
+			/*
+			case 'utf8':
 
-					reader.addEventListener( 'load', function ( event ) {
+				reader.addEventListener( 'load', function ( event ) {
 
-						var contents = event.target.result;
+					var contents = event.target.result;
 
-						var geometry = new THREE.UTF8Loader().parse( contents );
-						var material = new THREE.MeshLambertMaterial();
+					var geometry = new THREE.UTF8Loader().parse( contents );
+					var material = new THREE.MeshLambertMaterial();
 
-						var mesh = new THREE.Mesh( geometry, material );
+					var mesh = new THREE.Mesh( geometry, material );
 
-						widget.execute( new AddObjectCommand( mesh ) );
+					widget.execute( new AddObjectCommand( mesh ) );
 
-					}, false );
-					reader.readAsBinaryString( file );
+				}, false );
+				reader.readAsBinaryString( file );
 
-					break;
-				*/
+				break;
+			*/
 
 			case 'vtk':
 				new THREE.VTKLoader().load(url, function (geometry) {
@@ -411,7 +411,16 @@ var Loader = function (widget) {
 					callback ? callback() : widget.addObjectCommand(mesh);
 				});
 				break;
+			case 'x':
+				new THREE.XLoader(THREE.DefaultLoadingManager).load([url, false], function (object) {
+					var group = new THREE.Group();
+					for (var i = 0; i < object.FrameInfo.length; i++) {
+						group.add(object.FrameInfo[i]);
+					}
+					callback ? callback() : widget.addObjectCommand(group);
+				});
 
+				break;
 			case 'wrl':
 				new THREE.VRMLLoader().load(url, function (scene) {
 					callback ? callback() : widget.setSceneCommand(scene);

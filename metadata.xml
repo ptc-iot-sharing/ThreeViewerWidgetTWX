@@ -1,6 +1,6 @@
 <Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.7" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.16" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -39,6 +39,7 @@
         <FileResource type="JS" file="loaders/KMZLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/MD2Loader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/MTLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/XLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/OBJLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/PCDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/PDBLoader.js" description="" isDevelopment="false" isRuntime="true"/>
