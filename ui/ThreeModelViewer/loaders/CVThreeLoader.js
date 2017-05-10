@@ -133,7 +133,7 @@ var CVThreeLoader = (function() {
                         if (this.m_loadAsHierarchy)
                         {
                             var group = new THREE.Object3D();
-                            group.name = inst.GetIDPath();
+                            group.name = inst.GetIDPath().replace(/\//g,"-");
                             group.applyMatrix(threeMat4);
                             var parent = depth-1;
                             this.depthObjects[parent].add(group);
@@ -155,7 +155,7 @@ var CVThreeLoader = (function() {
                         shape.Accept(vis);
 
                         vis.group.applyMatrix(threeMat4);
-                        vis.group.name = inst.GetIDPath();
+                        vis.group.name = inst.GetIDPath().replace(/\//g,"-");
                         vis.CreateMeshes();
                         if (this.m_loadAsHierarchy)
                         {
@@ -171,7 +171,7 @@ var CVThreeLoader = (function() {
                         if (this.m_loadAsHierarchy)
                         {
                             var group = new THREE.Object3D();
-                            group.name = inst.GetIDPath();
+                            group.name = inst.GetIDPath().replace(/\//g,"-");
                             group.applyMatrix(threeMat4);
                             var parent = depth-1;
                             this.depthObjects[parent].add(group);

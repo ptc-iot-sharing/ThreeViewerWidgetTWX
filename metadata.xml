@@ -1,11 +1,11 @@
 <Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.16" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.27" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
       <UIResources>
-        <FileResource type="JS" file="three.min.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="three.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="tween.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="ThreeModelViewer.ide.js" description="" isDevelopment="true" isRuntime="false"/>
         <FileResource type="CSS" file="ThreeModelViewer.ide.css" description="" isDevelopment="true" isRuntime="false"/>

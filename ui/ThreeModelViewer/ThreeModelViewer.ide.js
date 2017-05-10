@@ -100,7 +100,7 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     }, {
                         value: 'sea',
                         text: 'sea'
-                    },{
+                    }, {
                         value: 'x',
                         text: 'x'
                     }, {
@@ -258,6 +258,13 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'baseType': 'STYLEDEFINITION',
                     'defaultValue': '',
                     'description': 'The background of the widget. Opacity is supported'
+                },
+                'Animations': {
+                    'baseType': 'STRING',
+                    'defaultValue': '',
+                    'description': 'Dump of animation clips to play. See the AnimationClip docs. Must be a json',
+                    'isBindingTarget': true
+
                 }
                 // add any additional properties here
             }

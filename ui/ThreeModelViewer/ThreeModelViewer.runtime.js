@@ -26,6 +26,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     var renderCallbacks = [];
     // tweens for rotations
     var tweenX, tweenY, tweenZ;
+    // mixer for animations
+    // TODO: reuse this mixer in loaders?
+    var mixer;
+    var clock = new THREE.Clock();
 
     var sceneTreeDataShape = {
         fieldDefinitions: {
@@ -334,6 +338,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             if (stats) {
                 stats.begin();
             }
+            if(mixer){
+                mixer.update(clock.getDelta());
+            }
             TWEEN.update();
             controls.target = cameraTarget;
             controls.update();
@@ -433,6 +440,12 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     }
                 }
                 break;
+            case "Animations":
+                var clip = THREE.AnimationClip.parse(JSON.parse(thisWidget.getProperty("Animations")));
+                // setup the mixer and play the animation sequence
+                mixer = new THREE.AnimationMixer(scene);
+                mixer.clipAction(clip).play();
+                break;
             default:
                 break;
         }
@@ -465,9 +478,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)(\s|,)*(([0-9]*[.])?[0-9]+)?/i);
         return (rgb) ? {
             color: "#" +
-                ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-                ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-                ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2),
+            ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+            ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+            ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2),
             opacity: rgb[5]
         } : '';
     }
