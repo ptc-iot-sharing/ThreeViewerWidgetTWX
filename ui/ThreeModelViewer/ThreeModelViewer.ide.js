@@ -259,6 +259,13 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'defaultValue': '',
                     'description': 'The background of the widget. Opacity is supported'
                 },
+                'OverridenModelChilds': {
+                    'baseType': 'INFOTABLE',
+                    'defaultValue': '',
+                    'description': 'Infotable describing the overriden model child items',
+                    'isBindingTarget': true
+
+                },
                 'Animations': {
                     'baseType': 'STRING',
                     'defaultValue': '',

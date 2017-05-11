@@ -57,7 +57,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
      */
     this.initializeScene = function () {
         renderCallbacks = [];
-
         scene = new THREE.Scene();
 
         /// Global : group
@@ -160,7 +159,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         } else {
             scene.add(model);
         }
-
+        if (mixer) {
+            mixer.stopAllAction();
+        }
+        mixer = new THREE.AnimationMixer(scene);
         console.log("Changed model");
         thisWidget.buildSceneTree(model);
     };
@@ -198,6 +200,11 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
      */
     this.setSceneCommand = function (sceneObject, renderCallback) {
         scene = sceneObject;
+        if (mixer) {
+            mixer.stopAllAction();
+        }
+        mixer = new THREE.AnimationMixer(scene);
+
         if (eventControls) {
             sceneObject.traverseVisible(function (child) {
                 if (child.isMesh) {
@@ -338,7 +345,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             if (stats) {
                 stats.begin();
             }
-            if(mixer){
+            if (mixer) {
                 mixer.update(clock.getDelta());
             }
             TWEEN.update();
@@ -440,10 +447,31 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     }
                 }
                 break;
+            case "OverridenModelChilds":
+                var overrides = thisWidget.getProperty("OverridenModelChilds");
+                for (var i = 0; i < overrides.rows.length; i++) {
+                    var override = overrides.rows[i];
+                    var obj = scene.getObjectByName(override["objectId"]);
+                    if (obj) {
+                        var newMaterial = new THREE.MeshPhongMaterial({
+                            color: override["color"]
+                        });
+                        obj.traverseVisible(function (object) {
+                            if (object.material) {
+                                object.oldMaterial = object.material;
+                                object.material = newMaterial;
+                            }
+                        })
+
+                    }
+                }
+                break;
             case "Animations":
                 var clip = THREE.AnimationClip.parse(JSON.parse(thisWidget.getProperty("Animations")));
                 // setup the mixer and play the animation sequence
-                mixer = new THREE.AnimationMixer(scene);
+                if (mixer) {
+                    mixer.stopAllAction();
+                }
                 mixer.clipAction(clip).play();
                 break;
             default:
