@@ -310,6 +310,7 @@ var CVThreeLoader = (function() {
                             geometry.computeVertexNormals();                            
                         }
                         var mesh = new THREE.Mesh(geometry, this.appearances[key].mat);
+                        mesh.name = this.group.name + "-" + key;
                         mesh.doubleSided = true;
                         mesh.matrixAutoUpdate = false;
                         this.group.add(mesh);
