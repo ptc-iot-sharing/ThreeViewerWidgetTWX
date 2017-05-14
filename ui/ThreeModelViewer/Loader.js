@@ -10,45 +10,58 @@ var Loader = function (widget) {
 
 	// animation mixer used for all the models
 	var mixer;
+	// clock to be used for all models
+	var clock = new THREE.Clock();
+
+	function buildCallback(loaderResult, callback, renderCallback) {
+		if (callback) {
+			callback(loaderResult, renderCallback);
+		} else {
+			if (loaderResult.type == "Scene") {
+				widget.setSceneCommand(loaderResult);
+			} else {
+				widget.addObjectCommand(loaderResult, renderCallback);
+			}
+		}
+	}
 
 	this.loadFile = function (modelType, url, texturePath, callback) {
 
-		var extension = modelType == "Auto-Detect" ? url.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
+		var extension = (!modelType || modelType == "Auto-Detect") ? url.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
 		// handle the texture path. If it's set, then use it. If not, get it from the URL
 		texturePath = texturePath ? texturePath : url.substring(0, url.lastIndexOf("/") + 1);
 		switch (extension) {
 			case '3mf':
 				new THREE.ThreeMFLoader().load(url, function (model) {
-					callback ? callback() : widget.addObjectCommand(model);
+					buildCallback(model, callback);
 				});
 				break;
 			case 'amf':
 				new THREE.AMFLoader().load(url, function (model) {
-					callback ? callback() : widget.addObjectCommand(model);
+					buildCallback(model, callback);
 				});
 				break;
 			case 'assimpjson':
 				new THREE.AssimpJSONLoader().load(url, function (model) {
-					callback ? callback() : widget.addObjectCommand(model);
+					buildCallback(model, callback);
 				});
 				break;
 			case 'assimp':
 				new THREE.AssimpLoader().load(url, function (error, model) {
-					var clock = new THREE.Clock();
-					callback ? callback() : widget.addObjectCommand(model.object, function () {
+					buildCallback(model.object, callback, function () {
 						model.animation.setTime(clock.getElapsedTime());
-					});
+					})
 				});
 				break;
 			case 'awd':
 				new THREE.AWDLoader().load(url, function (scene) {
-					callback ? callback() : widget.setSceneCommand(scene);
+					buildCallback(scene, callback);
 				});
 				break;
 
 			case 'babylon':
 				new THREE.BabylonLoader().load(url, function (scene) {
-					callback ? callback() : widget.setSceneCommand(scene);
+					buildCallback(scene, callback);
 				});
 
 				break;
@@ -65,7 +78,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					callback ? callback() : widget.addObjectCommand(mesh);
+					buildCallback(mesh,callback);
 				});
 
 				break;
@@ -79,7 +92,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					callback ? callback() : widget.addObjectCommand(mesh);
+					buildCallback(mesh,callback);
 				});
 
 				break;
@@ -88,28 +101,25 @@ var Loader = function (widget) {
 				var colladaLoader = new THREE.ColladaLoader();
 				colladaLoader.options.convertUpAxis = true;
 				colladaLoader.load(url, function (collada) {
-					var clock = new THREE.Clock();
 					collada.scene.traverse(function (child) {
 						if (child instanceof THREE.SkinnedMesh) {
 							var animation = new THREE.Animation(child, child.geometry.animation);
 							animation.play();
 						}
 					});
-					callback ? callback() : widget.addObjectCommand(collada.scene, function (scene, camera) {
+					buildCallback(collada.scene, callback, function (scene, camera) {
 						THREE.AnimationHandler.update(clock.getDelta());
-					});
+					})
 				});
 
 				break;
 
 			case 'fbx':
 				var fbxLoader = new THREE.FBXLoader();
-				// TODO: setting the texture path is no longer supported in FBXLoader2
 				// if we already have a mixer set, then reuse it
 				if (mixer) {
 					mixer.stopAllAction();
 				}
-				var clock = new THREE.Clock();
 				fbxLoader.load(url, function (object) {
 					var animations = object.animations;
 					if (animations && animations.length) {
@@ -118,11 +128,11 @@ var Loader = function (widget) {
 							mixer.clipAction(animations[i]).play();
 						}
 					}
-					callback ? callback() : widget.addObjectCommand(object, function () {
+					buildCallback(object, callback, function () {
 						if (mixer) {
 							mixer.update(clock.getDelta());
 						}
-					})
+					});
 				});
 
 				break;
@@ -142,8 +152,7 @@ var Loader = function (widget) {
 							mixer.clipAction(animations[i]).play();
 						}
 					}
-					var clock = new THREE.Clock();
-					callback ? callback() : widget.addObjectCommand(object, function (scene, camera) {
+					buildCallback(object, callback, function () {
 						if (mixer) {
 							mixer.update(clock.getDelta());
 						}
@@ -212,7 +221,7 @@ var Loader = function (widget) {
 
 			case 'kmz':
 				new THREE.KMZLoader().load(url, function (collada) {
-					callback ? callback() : widget.addObjectCommand(collada.scene);
+					buildCallback(collada.scene, callback);
 				});
 
 				break;
@@ -228,7 +237,7 @@ var Loader = function (widget) {
 					mesh.mixer = new THREE.AnimationMixer(mesh);
 					mesh.name = modelType;
 
-					callback ? callback() : widget.addObjectCommand(mesh);
+					buildCallback(mesh,callback);
 				});
 
 				break;
@@ -240,7 +249,7 @@ var Loader = function (widget) {
 				var objLoader = new THREE.OBJLoader();
 				var loadObjFunction = function () {
 					objLoader.load(url, function (object) {
-						callback ? callback() : widget.addObjectCommand(object);
+						buildCallback(object, callback);
 					});
 				};
 				var mtlPath;
@@ -259,7 +268,7 @@ var Loader = function (widget) {
 
 			case 'playcanvas':
 				new THREE.PlayCanvasLoader().load(url, function (object) {
-					callback ? callback() : widget.addObjectCommand(object);
+					buildCallback(object, callback);
 				});
 				break;
 
@@ -273,7 +282,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					callback ? callback() : widget.addObjectCommand(mesh);
+					buildCallback(mesh,callback);
 				});
 
 				break;
@@ -293,13 +302,13 @@ var Loader = function (widget) {
 						},
 							function (obj) {
 								loadingManager.itemError(url);
-								if (failCallback) failCallback();
+								if (failCallback) failcallback(model);
 							},
 							createhierarchy);
 					} catch (e) {
 						console.error('CVThreeLoader::LoadModel failed. Error: %o', e);
 						loadingManager.itemError(url);
-						if (failCallback) failCallback();
+						if (failCallback) failcallback(model);
 					} finally {
 
 					}
@@ -308,7 +317,7 @@ var Loader = function (widget) {
 				// wait a bit because we can get a error Assertion failed: you need to wait for the runtime to be ready (e.g. wait for main() to be called)
 				if (window.cvApiInited) {
 					setTimeout(function () {
-						loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function () {
+						loadPvzFile(url, callback ? callback : widget.addObjectCommand, function () {
 							//alert("Failed to load the PVZ");
 						});
 					}, 200);
@@ -318,9 +327,7 @@ var Loader = function (widget) {
 						window.cvApiInited = true;
 
 						setTimeout(function () {
-							loadPvzFile(url, callback ? callback() : widget.addObjectCommand, function () {
-								//alert("Failed to load the PVZ");
-							});
+							loadPvzFile(url, callback ? callback : widget.addObjectCommand);
 						}, 200);
 
 					});
@@ -340,7 +347,7 @@ var Loader = function (widget) {
 						// set the camera if we have one in the scene
 						widget.setCameraCommand(loader.cameras[0]);
 					}
-					callback ? callback() : widget.setSceneCommand(scene);
+					buildCallback(scene, callback);
 					animate();
 				};
 
@@ -372,7 +379,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					callback ? callback() : widget.addObjectCommand(mesh);
+					buildCallback(mesh,callback);
 				});
 
 				break;
@@ -407,7 +414,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					callback ? callback() : widget.addObjectCommand(mesh);
+					buildCallback(mesh,callback);
 				});
 				break;
 			case 'x':
@@ -416,13 +423,13 @@ var Loader = function (widget) {
 					for (var i = 0; i < object.FrameInfo.length; i++) {
 						group.add(object.FrameInfo[i]);
 					}
-					callback ? callback() : widget.addObjectCommand(group);
+					buildCallback(group, callback);
 				});
 
 				break;
 			case 'wrl':
 				new THREE.VRMLLoader().load(url, function (scene) {
-					callback ? callback() : widget.setSceneCommand(scene);
+					buildCallback(scene, callback);
 				});
 
 				break;
