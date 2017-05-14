@@ -107,6 +107,13 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     };
 
     /**
+     * Loads a new model into the scene.
+     */
+    this.loadModel = function (modelUrl, modelType, texturePath, callback) {
+        loader.loadFile(modelType, modelUrl, texturePath, callback);
+    }
+
+    /**
      * Adds a new object to the scene. It first attempts to place it in the origin, then positions the camera in its best position to view it
      */
     this.addObjectCommand = function (model, renderCallback) {
@@ -387,7 +394,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 handleBackgroundColor();
                 break;
             case "ModelUrl":
-                loader.loadFile(thisWidget.getProperty("ModelType"), updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("TexturePath"));
+                thisWidget.loadModel(updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("ModelType"),  thisWidget.getProperty("TexturePath"));
                 break;
             case 'SelectedItem':
                 // find the object that has this id

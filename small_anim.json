@@ -1,0 +1,38 @@
+{
+    "name": "Action",
+    "duration": 1,
+    "fps": 2,
+    "tracks": [
+        {
+            "name": "-6.position",
+            "times": [
+                0,
+                1,
+                2
+            ],
+            "values": [
+                0,
+                0,
+                0,
+                -0.3,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "type": "number"
+        },
+        {
+            "name": "-6-0.material.color",
+            "times": [
+                0,
+                1,
+                2
+            ],
+            "values": [
+                1,1,1,0,0,0,1,1,1],
+            "type": "number"
+        }
+    ]
+}

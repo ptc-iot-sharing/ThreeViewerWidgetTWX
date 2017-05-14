@@ -1,0 +1,58 @@
+{
+    "name": "Action",
+    "duration": 1,
+    "fps": 2,
+    "tracks": [
+        {
+            "name": "Solid1-210.position",
+            "times": [
+                0,
+                1,
+                2
+            ],
+            "values": [
+                0,
+                0,
+                0,
+                -300,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "type": "number"
+        },
+  {
+            "name": "Solid1-212.position",
+            "times": [
+                0,
+                1,
+                2
+            ],
+            "values": [
+                300,
+                0,
+                0,
+                0,
+                0,
+                0,
+                300,
+                0,
+                0
+            ],
+            "type": "number"
+        },
+        {
+            "name": "Solid1-212.material.color",
+            "times": [
+                0,
+                1,
+                2
+            ],
+            "values": [
+                1,0,1,0,1,0,1,0,1],
+            "type": "number"
+        }
+    ]
+}
