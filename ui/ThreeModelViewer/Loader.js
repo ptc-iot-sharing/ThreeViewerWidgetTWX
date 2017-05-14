@@ -147,7 +147,6 @@ var Loader = function (widget) {
 						if (mixer) {
 							mixer.update(clock.getDelta());
 						}
-						THREE.GLTFLoader.Shaders.update(scene, camera);
 					});
 				});
 
