@@ -91,7 +91,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         /// light in every corner
         var lightIntensity = thisWidget.getProperty("LightIntensity") ? thisWidget.getProperty("LightIntensity") : 0.8;
         var directionalLight = new THREE.DirectionalLight(0xa6a6a6, lightIntensity);
-        directionalLight.position.set(0, 1, 0);
+        directionalLight.position.set(-1, 0, 1);
 
         var dl1 = new THREE.DirectionalLight(0xa6a6a6, lightIntensity);
         var dl2 = dl1.clone();
@@ -99,10 +99,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         var dl4 = dl1.clone();
         // dl1.layers.mask = dl2.layers.mask = dl3.layers.mask = dl4.layers.mask = 0xff;
 
-        dl1.position.set(0, 0, -1);
-        dl2.position.set(0, 0, 1);
-        dl3.position.set(1, 0, 0);
-        dl4.position.set(-1, 0, 0);
+        dl1.position.set(1, 0, 1);
+        dl2.position.set(1, 0, -1);
+        dl3.position.set(1, 1, 0);
+        dl4.position.set(0, -1, -1);
         scene.add(directionalLight, dl1, dl2, dl3, dl4);
     };
     
