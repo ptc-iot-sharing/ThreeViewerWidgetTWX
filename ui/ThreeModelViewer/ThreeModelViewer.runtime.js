@@ -1,7 +1,7 @@
 TW.Runtime.Widgets.ThreeModelViewer = function () {
     var thisWidget = this;
     // controls of the OrbitControls and EventsControls
-    var controls, eventControls;
+    var controls, eventControls, transformControls;
     var renderer;
     // the current scene
     var scene;
@@ -105,6 +105,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         dl4.position.set(-1, 0, 0);
         scene.add(directionalLight, dl1, dl2, dl3, dl4);
     };
+
+    this.getScene = function () {
+        return scene;
+    }
 
     /**
      * Loads a new model into the scene.
@@ -306,6 +310,50 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         // add the orbit controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
 
+        if (thisWidget.getProperty('TransformControls')) {
+            transformControls = new THREE.TransformControls(camera, renderer.domElement);
+            // TODO: should not add stuff on window
+            window.addEventListener('keydown', function (event) {
+                switch (event.keyCode) {
+                    case 81: // Q
+                        transformControls.setSpace(transformControls.space === "local" ? "world" : "local");
+                        break;
+                    case 17: // Ctrl
+                        transformControls.setTranslationSnap(100);
+                        transformControls.setRotationSnap(THREE.Math.degToRad(15));
+                        break;
+                    case 87: // W
+                        transformControls.setMode("translate");
+                        break;
+                    case 69: // E
+                        transformControls.setMode("rotate");
+                        break;
+                    case 82: // R
+                        transformControls.setMode("scale");
+                        break;
+                    case 187:
+                    case 107: // +, =, num+
+                        transformControls.setSize(transformControls.size + 0.1);
+                        break;
+                    case 189:
+                    case 109: // -, _, num-
+                        transformControls.setSize(Math.max(transformControls.size - 0.1, 0.1));
+                        break;
+                }
+            });
+            // TODO: should not add stuff on window
+            window.addEventListener('keyup', function (event) {
+                switch (event.keyCode) {
+                    case 17: // Ctrl
+                        transformControls.setTranslationSnap(null);
+                        transformControls.setRotationSnap(null);
+                        break;
+                }
+            });
+            scene.add(transformControls);
+        }
+
+
         if (thisWidget.getProperty('EnableSelection')) {
             eventControls = new EventsControls(camera, renderer.domElement);
 
@@ -327,6 +375,10 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                     objectName = this.event.object.name;
                 } else {
                     objectName = this.event.object.parent.name;
+                }
+                if (transformControls) {
+                    transformControls.detach();
+                    transformControls.attach(this.event.object);
                 }
                 thisWidget.setProperty("SelectedItemName", objectName);
             });
@@ -370,6 +422,9 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             if (eventControls) {
                 eventControls.update();
             }
+            if (transformControls) {
+                transformControls.update();
+            }
             if (stats) {
                 stats.end();
             }
@@ -394,7 +449,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 handleBackgroundColor();
                 break;
             case "ModelUrl":
-                thisWidget.loadModel(updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("ModelType"),  thisWidget.getProperty("TexturePath"));
+                thisWidget.loadModel(updatePropertyInfo.RawSinglePropertyValue, thisWidget.getProperty("ModelType"), thisWidget.getProperty("TexturePath"));
                 break;
             case 'SelectedItem':
                 // find the object that has this id

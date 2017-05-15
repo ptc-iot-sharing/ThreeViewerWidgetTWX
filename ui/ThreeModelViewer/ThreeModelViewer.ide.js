@@ -163,6 +163,12 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                     'defaultValue': false,
                     'isBindingTarget': true
                 },
+                'TransformControls': {
+                    'description': 'Enable editing the scene using translate/rotate/scale commands',
+                    'baseType': 'BOOLEAN',
+                    'isVisible': true,
+                    'defaultValue': false,
+                },
                 'ShowStats': {
                     'description': 'Show render statistics (FPS, memory, CPU)',
                     'baseType': 'BOOLEAN',

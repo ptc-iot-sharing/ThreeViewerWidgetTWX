@@ -4,7 +4,7 @@
     "fps": 2,
     "tracks": [
         {
-            "name": "Solid1-210.position",
+            "name": "Solid1-208.position",
             "times": [
                 0,
                 1,
@@ -21,10 +21,11 @@
                 0,
                 0
             ],
-            "type": "number"
+            "type": "number",
+            "interpolation": 2302
         },
-  {
-            "name": "Solid1-212.position",
+        {
+            "name": "Solid1-210.position",
             "times": [
                 0,
                 1,
@@ -41,17 +42,27 @@
                 0,
                 0
             ],
-            "type": "number"
+            "type": "number",
+            "interpolation": 2302
         },
         {
-            "name": "Solid1-212.material.color",
+            "name": "Solid1-210_1.material.color",
             "times": [
                 0,
                 1,
                 2
             ],
             "values": [
-                1,0,1,0,1,0,1,0,1],
+                1,
+                0,
+                1,
+                0,
+                1,
+                0,
+                1,
+                0,
+                1
+            ],
             "type": "number"
         }
     ]

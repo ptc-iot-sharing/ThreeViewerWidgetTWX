@@ -1,6 +1,6 @@
 <Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.49" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.72" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -59,6 +59,7 @@
         <FileResource type="JS" file="loaders/sea3d/SEA3DLZMA.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/sea3d/XSEA3DLegacy.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="EventControls.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="TransformControls.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="stats.min.js" description="" isDevelopment="false" isRuntime="true"/>
       </UIResources>
     </Widget>
