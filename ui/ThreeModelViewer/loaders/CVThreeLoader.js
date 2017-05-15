@@ -68,7 +68,7 @@ var CVThreeLoader = (function() {
                 {
                     this.__parent.__construct.call(this)
                     this.depthObjects = {};
-                    this.depthObjects["-1"] = new THREE.Object3D();
+                    this.depthObjects["-1"] = new THREE.Group();
                     this.group = this.depthObjects["-1"];
                     this.m_session = session;
                     this.m_loadAsHierarchy = loadAsHierarchy;
@@ -132,7 +132,7 @@ var CVThreeLoader = (function() {
                     {
                         if (this.m_loadAsHierarchy)
                         {
-                            var group = new THREE.Object3D();
+                            var group = new THREE.Group();
                             group.name = inst.GetIDPath().replace(/\//g,"-");
                             group.applyMatrix(threeMat4);
                             var parent = depth-1;
@@ -170,7 +170,7 @@ var CVThreeLoader = (function() {
                     {
                         if (this.m_loadAsHierarchy)
                         {
-                            var group = new THREE.Object3D();
+                            var group = new THREE.Group();
                             group.name = inst.GetIDPath().replace(/\//g,"-");
                             group.applyMatrix(threeMat4);
                             var parent = depth-1;
@@ -191,7 +191,7 @@ var CVThreeLoader = (function() {
                 __construct: function() {
                     this.__parent.__construct.call(this);
                     this.material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-                    this.group = new THREE.Object3D();
+                    this.group = new THREE.Group();
                     this.lastAppearanceId = 0;
                     this.reuseAppearance = 0;
                     this.numPolyForm = 0;
