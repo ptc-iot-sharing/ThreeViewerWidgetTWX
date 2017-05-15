@@ -105,9 +105,19 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         dl4.position.set(-1, 0, 0);
         scene.add(directionalLight, dl1, dl2, dl3, dl4);
     };
-
+    
+    /**
+     * Gets the current scene 
+     */
     this.getScene = function () {
         return scene;
+    }
+
+    /**
+     * Gets the current animation mixer for this thing
+     */
+    this.getAnimationMixer = function() {
+        return mixer;
     }
 
     /**
