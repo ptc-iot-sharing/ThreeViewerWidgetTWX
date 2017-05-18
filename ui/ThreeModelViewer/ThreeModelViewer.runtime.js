@@ -105,7 +105,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         dl4.position.set(0, -1, -1);
         scene.add(directionalLight, dl1, dl2, dl3, dl4);
     };
-    
+
     /**
      * Gets the current scene 
      */
@@ -116,8 +116,15 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
     /**
      * Gets the current animation mixer for this thing
      */
-    this.getAnimationMixer = function() {
+    this.getAnimationMixer = function () {
         return mixer;
+    }
+
+    /**
+     * Gets the active camera in the scene
+     */
+    this.getCamera = function () {
+        return camera;
     }
 
     /**
@@ -418,7 +425,6 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
                 mixer.update(clock.getDelta());
             }
             TWEEN.update();
-            controls.target = cameraTarget;
             controls.update();
             // call each callback that came from the model
             for (var i = 0; i < renderCallbacks.length; i++) {
