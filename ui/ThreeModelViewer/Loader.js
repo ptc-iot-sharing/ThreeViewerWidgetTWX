@@ -78,7 +78,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					buildCallback(mesh,callback);
+					buildCallback(mesh, callback);
 				});
 
 				break;
@@ -92,7 +92,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					buildCallback(mesh,callback);
+					buildCallback(mesh, callback);
 				});
 
 				break;
@@ -237,7 +237,7 @@ var Loader = function (widget) {
 					mesh.mixer = new THREE.AnimationMixer(mesh);
 					mesh.name = modelType;
 
-					buildCallback(mesh,callback);
+					buildCallback(mesh, callback);
 				});
 
 				break;
@@ -282,7 +282,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					buildCallback(mesh,callback);
+					buildCallback(mesh, callback);
 				});
 
 				break;
@@ -293,7 +293,7 @@ var Loader = function (widget) {
 				var loadingManager = THREE.DefaultLoadingManager;
 				loadingManager.itemStart(url);
 
-				function loadPvzFile(file, successCallback, failCallback) {
+				var loadPvzFile = function (file, successCallback, failCallback) {
 					try {
 						var createhierarchy = true;
 						CVThreeLoader.LoadModel(file, function (obj) {
@@ -341,6 +341,14 @@ var Loader = function (widget) {
 					autoPlay: true, // Auto play animations
 					container: scene // Container to add models
 				});
+				var clock = new THREE.Clock();
+
+				var animate = function () {
+					var delta = clock.getDelta();
+					requestAnimationFrame(animate);
+					// Update SEA3D Animations
+					THREE.SEA3D.AnimationHandler.update(delta);
+				}
 				loader.load(url);
 				loader.onComplete = function (e) {
 					if (loader.cameras[0]) {
@@ -350,15 +358,6 @@ var Loader = function (widget) {
 					buildCallback(scene, callback);
 					animate();
 				};
-
-				var clock = new THREE.Clock();
-
-				function animate() {
-					var delta = clock.getDelta();
-					requestAnimationFrame(animate);
-					// Update SEA3D Animations
-					THREE.SEA3D.AnimationHandler.update(delta);
-				}
 				break;
 
 			case 'stl':
@@ -379,7 +378,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					buildCallback(mesh,callback);
+					buildCallback(mesh, callback);
 				});
 
 				break;
@@ -414,7 +413,7 @@ var Loader = function (widget) {
 					var mesh = new THREE.Mesh(geometry, material);
 					mesh.name = modelType;
 
-					buildCallback(mesh,callback);
+					buildCallback(mesh, callback);
 				});
 				break;
 			case 'x':
