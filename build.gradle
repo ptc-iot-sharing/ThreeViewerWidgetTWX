@@ -1,8 +1,10 @@
+import org.apache.http.entity.mime.MultipartEntity
+import org.apache.http.entity.mime.HttpMultipartMode
+import org.apache.http.entity.mime.content.FileBody
 import groovyx.net.http.HTTPBuilder
-import org.apache.http.entity.mime.MultipartEntityBuilder
-import groovy.io.FileType
-
-import static groovyx.net.http.Method.POST
+import static groovyx.net.http.Method.*
+import static groovyx.net.http.ContentType.*
+import com.eriwen.gradle.js.tasks.MinifyJsTask
 
 buildscript {
    repositories {
@@ -14,21 +16,27 @@ buildscript {
    }
 }
 
+plugins {
+  id "com.eriwen.gradle.js" version "2.14.1"
+}
+
 // set the properties accordingly
 project.ext {
     baseDir = projectDir
     uiDir = "${baseDir}/ui"
     libDir = "${baseDir}/lib"
     configDir = "${baseDir}/metadata.xml"
+    entitiesDir = "${baseDir}/Entities"
     zipDir = "${baseDir}/zip"
     packageVendor = "ThingWorx Customer Service"
-    thingworxServerRoot = "http://Administrator:admin@localhost:8011"
+    thingworxServerRoot = "http://localhost:8012"
     thingworxUser = "Administrator"
     thingworxPass = "admin"
+    skipJsFiles = ["**/libthingload.js", "**/three.js"]
 }
 
-def increaseVersionNumber() {
-      //getWidgetList()
+task increaseVersionNumber() {
+  doLast {
     def file = "${baseDir}/metadata.xml"
     def parser = new groovy.util.XmlParser(false,true);
     def xml = parser.parse(file)
@@ -45,56 +53,54 @@ def increaseVersionNumber() {
   //  xml.ExtensionPackages.ExtensionPackage.get(0).attributes().put('packageVersion', String.join(',', versionComponents));
 
     println 'Updated to version ' + String.join('.', versionComponents)
+    println xml.ExtensionPackages.ExtensionPackage.@packageVersion[0];
 
-    new XmlNodePrinter(new PrintWriter(new FileWriter(file))).print(xml)
-}
-
-def getWidgetList() {
-    def file = "${baseDir}/metadata.xml"
-    def parser = new groovy.util.XmlParser(false,true);
-    def xml = parser.parse(file)
-
-    xml.Widgets.Widget.each { widget ->
-        println "Found widget: ${widget.@name}"
-        def list = []
-
-        def dir = new File("${project.ext.uiDir}/${widget.@name}")
-        dir.eachFileRecurse (FileType.FILES) { file3 ->
-             widget.UIResources[0]?.appendNode(
-                "FileResource",
-                [type: "JS", file: file3, description:"", isDevelopment:"false", isRuntime:"true"]
-        )
-        }
-
-    }
-     PrintWriter pw = new PrintWriter(new File(file))
+    PrintWriter pw = new PrintWriter(new File(file))
     pw.write(groovy.xml.XmlUtil.serialize(xml))
     pw.close()
+
+  }
 }
 
-task generateUiMetadata() {
-    def list = []
-
-    def dir = new File("${project.ext.uiDir}")
-    dir.eachFileRecurse (FileType.FILES) { file ->
-        list << file
-    }
-    increaseVersionNumber()
-    
-}
-
-task prepPackage(dependsOn: generateUiMetadata) {
+task copyUiFiles {
     doLast {
-        delete project.ext.zipDir
+        copy {
+            from uiDir
+            into "${buildDir}/zip/ui/"
+        }
+        if (project.hasProperty('buildRelease')) { 
+            fileTree("${buildDir}/zip/ui/") {include '**/*.js' exclude project.ext.skipJsFiles } .eachWithIndex { jsFile, index ->
+                def dynamicTask = "minify$index"
+                task "$dynamicTask" (type: MinifyJsTask) {
+                    source = jsFile
+                    dest = jsFile
+                    closure {
+                        compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+                        warningLevel = 'QUIET'
+                        compilerOptions = [
+                            languageIn: 'ECMASCRIPT5',
+                        ]
+                    }
+                }
+                tasks."$dynamicTask".execute()
+            }
+        }
+    }
+}
+
+task prepPackage(dependsOn: ['increaseVersionNumber', 'copyUiFiles']) {
+    delete project.ext.zipDir
+    delete "${buildDir}/zip/"
+    doLast {
         // add the configuration
         copy {
             from "${project.ext.configDir}"
             into "${buildDir}/zip/"
         }
-        // add the ui files
+        // add the entities 
         copy {
-            from uiDir
-            into "${buildDir}/zip/ui/"
+            from entitiesDir
+            into "${buildDir}/zip/Entities/"
         }
     }
 }
@@ -108,16 +114,18 @@ task packageExtension(type: Zip, dependsOn: prepPackage, overwrite: true) {
 task upload(dependsOn: packageExtension) {
   doLast{
     def http = new HTTPBuilder("${thingworxServerRoot}/Thingworx/")
-    http.ignoreSSLIssues()
+    http.auth.basic thingworxUser, thingworxPass
+
+    def extZip = file("${baseDir}/zip/${project.name}.zip")
 
     http.request(POST) { req ->
         uri.path = 'ExtensionPackageUploader'
         uri.query = ['purpose': 'import']
         headers."X-XSRF-TOKEN" = "TWX-XSRF-TOKEN-VALUE"
         requestContentType = 'multipart/form-data'
-        MultipartEntityBuilder entity = MultipartEntityBuilder.create().setLaxMode()
-        entity.addBinaryBody('file', file("${baseDir}/zip/${project.name}.zip"))
-        req.setEntity(entity.build())
+        MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE)
+        entity.addPart('file', new FileBody(extZip))
+        req.setEntity(entity)
         response.success = {resp ->
             println("Upload successful!")
         }
