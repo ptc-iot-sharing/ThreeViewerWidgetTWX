@@ -354,7 +354,6 @@ var Loader = function (widget) {
 					autoPlay: true, // Auto play animations
 					container: scene // Container to add models
 				});
-				var clock = new THREE.Clock();
 
 				var animate = function () {
 					var delta = clock.getDelta();
