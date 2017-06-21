@@ -32,7 +32,7 @@
         <FileResource type="JS" file="loaders/CVThreeLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/DDSLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/deprecated/SceneLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/FBXLoader2.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/FBXLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="curves/NURBSCurve.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="curves/NURBSSurface.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="curves/NURBSUtils.js" description="" isDevelopment="false" isRuntime="true"/>

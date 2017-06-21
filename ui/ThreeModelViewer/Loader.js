@@ -36,6 +36,12 @@ var Loader = function (widget) {
 					buildCallback(model, callback);
 				});
 				break;
+			case '3ds':
+			case 'tds':
+				new THREE.TDSLoader().load(url, function (model) {
+					buildCallback(model, callback);
+				});
+				break;
 			case 'amf':
 				new THREE.AMFLoader().load(url, function (model) {
 					buildCallback(model, callback);
@@ -332,6 +338,13 @@ var Loader = function (widget) {
 
 					});
 				}
+				break;
+			case 'prwm':
+				new THREE.PRWMLoader().load(url, function (geometry) {
+					var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({}) );
+					buildCallback(mesh, callback);
+				});
+
 				break;
 			case 'sea':
 				// the sea loader is a bit wierd, because it adds stuff to the scene by itself
