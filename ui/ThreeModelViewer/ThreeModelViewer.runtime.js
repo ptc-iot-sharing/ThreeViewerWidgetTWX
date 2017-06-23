@@ -278,9 +278,7 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
             canvas: canvas,
             alpha: true
         });
-        // renderer.setPixelRatio (window.devicePixelRatio);
-        canvas.width = canvas.clientWidth * window.devicePixelRatio;
-        canvas.height = canvas.clientHeight * window.devicePixelRatio;
+        renderer.setPixelRatio(window.devicePixelRatio);
         camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
 
         if (thisWidget.getProperty("ShowStats")) {
@@ -296,25 +294,22 @@ TW.Runtime.Widgets.ThreeModelViewer = function () {
         // whenever the canvas resizes, we must be responsive.
         // so watch for canvas resizes via an interval
         function onResize(element, callback) {
-            var height = element.clientHeight * window.devicePixelRatio;
-            var width = element.clientWidth * window.devicePixelRatio;
+            var height = element.clientHeight;
+            var width = element.clientWidth;
 
             return setInterval(function () {
                 if (element.clientHeight != height || element.clientWidth != width) {
-                    height = element.clientHeight * window.devicePixelRatio;
-                    width = element.clientWidth * window.devicePixelRatio;
+                    height = element.clientHeight;
+                    width = element.clientWidth;
                     callback();
                 }
             }, 500);
         }
         onResize(canvas, function () {
-            canvas.width = canvas.clientWidth * window.devicePixelRatio;
-            canvas.height = canvas.clientHeight * window.devicePixelRatio;
-            renderer.setViewport(0, 0, canvas.clientWidth * window.devicePixelRatio, canvas.clientHeight * window.devicePixelRatio);
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         });
-        renderer.setViewport(0, 0, canvas.clientWidth * window.devicePixelRatio, canvas.clientHeight * window.devicePixelRatio);
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
         // set the initial background color
         if (thisWidget.getProperty('BackgroundStyle') === undefined) {
