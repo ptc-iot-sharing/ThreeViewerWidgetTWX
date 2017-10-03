@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.132" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.135" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -15,6 +15,7 @@
         <FileResource type="JS" file="Detector.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="Loader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/libs/jszip.min.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/libs/inflate.min.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/3MFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/AMFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/AssimpJSONLoader.js" description="" isDevelopment="false" isRuntime="true"/>
