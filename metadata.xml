@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.131" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.132" minimumThingWorxVersion="6.0.0"/>
   </ExtensionPackages>
   <Widgets>
     <Widget name="ThreeModelViewer">
@@ -22,10 +22,7 @@
         <FileResource type="JS" file="loaders/AWDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/BabylonLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/BinaryLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/collada/Animation.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/collada/AnimationHandler.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/collada/KeyFrameAnimation.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/ColladaLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/ColladaLoader2.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/ctm/ctm.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/ctm/CTMLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/ctm/lzma.js" description="" isDevelopment="false" isRuntime="true"/>
@@ -58,6 +55,7 @@
         <FileResource type="JS" file="loaders/sea3d/SEA3DLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/sea3d/SEA3DLZMA.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/sea3d/XSEA3DLegacy.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/draco/DRACOLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="EventControls.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="TransformControls.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="stats.min.js" description="" isDevelopment="false" isRuntime="true"/>
