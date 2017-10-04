@@ -29,14 +29,13 @@ project.ext {
     entitiesDir = "${baseDir}/Entities"
     zipDir = "${baseDir}/zip"
     packageVendor = "ThingWorx Customer Service"
-    thingworxServerRoot = "http://localhost:8011"
+    thingworxServerRoot = "http://localhost:8016"
     thingworxUser = "Administrator"
-    thingworxPass = "admin"
+    thingworxPass = "trUf6yuz2?_Gub"
     skipJsFiles = ["**/libthingload.js", "**/three.js"]
 }
 
 task increaseVersionNumber() {
-  doLast {
     def file = "${baseDir}/metadata.xml"
     def parser = new groovy.util.XmlParser(false,true);
     def xml = parser.parse(file)
@@ -48,18 +47,13 @@ task increaseVersionNumber() {
     def minorVersion = ++Integer.parseInt(versionComponents[versionComponents.length - 1]);
 
     versionComponents[versionComponents.length - 1] = String.valueOf(minorVersion);
-
-    xml.ExtensionPackages.ExtensionPackage.@packageVersion = String.join('.', versionComponents);
-  //  xml.ExtensionPackages.ExtensionPackage.get(0).attributes().put('packageVersion', String.join(',', versionComponents));
-
-    println 'Updated to version ' + String.join('.', versionComponents)
-    println xml.ExtensionPackages.ExtensionPackage.@packageVersion[0];
-
+    
+    version = String.join('.', versionComponents)
+    xml.ExtensionPackages.ExtensionPackage.@packageVersion = version
+    println 'Updated to version ' + project.version
     PrintWriter pw = new PrintWriter(new File(file))
     pw.write(groovy.xml.XmlUtil.serialize(xml))
     pw.close()
-
-  }
 }
 
 task copyUiFiles {
@@ -78,7 +72,8 @@ task copyUiFiles {
                         compilationLevel = 'SIMPLE_OPTIMIZATIONS'
                         warningLevel = 'QUIET'
                         compilerOptions = [
-                            languageIn: 'ECMASCRIPT5',
+                            languageIn: 'ECMASCRIPT6',
+                            languageOut: 'ECMASCRIPT5'
                         ]
                     }
                 }
@@ -106,7 +101,10 @@ task prepPackage(dependsOn: ['increaseVersionNumber', 'copyUiFiles']) {
 }
 
 task packageExtension(type: Zip, dependsOn: prepPackage, overwrite: true) {
-    archiveName = "${project.name}.zip"
+    version = project.version
+    baseName = project.name
+    extension = "zip"
+    appendix = project.hasProperty('buildRelease') ? "release" : "dev"
     destinationDir = new File(project.ext.zipDir)
     from "${buildDir}/zip/"
 }
@@ -114,9 +112,10 @@ task packageExtension(type: Zip, dependsOn: prepPackage, overwrite: true) {
 task upload(dependsOn: packageExtension) {
   doLast{
     def http = new HTTPBuilder("${thingworxServerRoot}/Thingworx/")
-    http.auth.basic thingworxUser, thingworxPass
+    def basicAuth = "${thingworxUser}:${thingworxPass}".bytes.encodeBase64().toString()
+    http.setHeaders ([Authorization: "Basic ${basicAuth}"])
 
-    def extZip = file("${baseDir}/zip/${project.name}.zip")
+    def extZip = file("${baseDir}/zip/${project.name}-${project.hasProperty('buildRelease') ? "release": "dev" }-${version}.zip")
 
     http.request(POST) { req ->
         uri.path = 'ExtensionPackageUploader'
