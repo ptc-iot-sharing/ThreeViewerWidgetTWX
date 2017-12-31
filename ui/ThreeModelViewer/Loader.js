@@ -166,6 +166,28 @@ var Loader = function (widget) {
 				});
 
 				break;
+			case 'gltf1':
+				new THREE.LegacyGLTFLoader().load(url, function (gltf) {
+					// if we already have a mixer set, then reuse it
+					if (mixer) {
+						mixer.stopAllAction();
+					}
+					var object = gltf.scene !== undefined ? gltf.scene : gltf.scenes[0];
+					var animations = gltf.animations;
+					if (animations && animations.length) {
+						mixer = new THREE.AnimationMixer(object);
+						for (var i = 0; i < animations.length; i++) {
+							mixer.clipAction(animations[i]).play();
+						}
+					}
+					buildCallback(object, callback, function () {
+						if (mixer) {
+							mixer.update(clock.getDelta());
+						}
+					});
+				});
+
+				break;
 
 			case 'js':
 			case 'json':
