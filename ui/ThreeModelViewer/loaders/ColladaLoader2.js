@@ -19,7 +19,7 @@ THREE.ColladaLoader.prototype = {
 
 		var scope = this;
 
-		var path = THREE.Loader.prototype.extractUrlBase( url );
+		var path = scope.path === undefined ? THREE.LoaderUtils.extractUrlBase( url ) : scope.path;
 
 		var loader = new THREE.FileLoader( scope.manager );
 		loader.load( url, function ( text ) {
@@ -30,11 +30,17 @@ THREE.ColladaLoader.prototype = {
 
 	},
 
+	setPath: function ( value ) {
+
+		this.path = value;
+
+	},
+
 	options: {
 
 		set convertUpAxis( value ) {
 
-			console.log( 'THREE.ColladaLoader.options.convertUpAxis: TODO' );
+			console.warn( 'THREE.ColladaLoader: options.convertUpAxis() has been removed. Up axis is converted automatically.' );
 
 		}
 
@@ -128,9 +134,15 @@ THREE.ColladaLoader.prototype = {
 
 		}
 
+		function generateId() {
+
+			return 'three_default_' + ( count ++ );
+
+		}
+
 		function isEmpty( object ) {
 
-			return  Object.keys( object ).length === 0;
+			return Object.keys( object ).length === 0;
 
 		}
 
@@ -346,13 +358,11 @@ THREE.ColladaLoader.prototype = {
 
 					var inputId = sampler.inputs.INPUT;
 					var outputId = sampler.inputs.OUTPUT;
-					var interpolationId = sampler.inputs.INTERPOLATION;
 
 					var inputSource = sources[ inputId ];
 					var outputSource = sources[ outputId ];
-					var interpolationSource = sources[ interpolationId ];
 
-					var animation = buildAnimationChannel( channel, inputSource, outputSource, interpolationSource );
+					var animation = buildAnimationChannel( channel, inputSource, outputSource );
 
 					createKeyframeTracks( animation, tracks );
 
@@ -370,7 +380,7 @@ THREE.ColladaLoader.prototype = {
 
 		}
 
-		function buildAnimationChannel( channel, inputSource, outputSource, interpolationSource ) {
+		function buildAnimationChannel( channel, inputSource, outputSource ) {
 
 			var node = library.nodes[ channel.id ];
 			var object3D = getNode( node.id );
@@ -437,7 +447,7 @@ THREE.ColladaLoader.prototype = {
 			var animation = {
 				name: object3D.uuid,
 				keyframes: keyframes
-			}
+			};
 
 			return animation;
 
@@ -578,7 +588,7 @@ THREE.ColladaLoader.prototype = {
 					prev = getPrev( keyframes, i, property );
 					next = getNext( keyframes, i, property );
 
-					if ( prev === null )  {
+					if ( prev === null ) {
 
 						keyframe.value[ property ] = next.value[ property ];
 						continue;
@@ -726,6 +736,11 @@ THREE.ColladaLoader.prototype = {
 						data.skin = parseSkin( child );
 						break;
 
+					case 'morph':
+						data.id = parseId( child.getAttribute( 'source' ) );
+						console.warn( 'THREE.ColladaLoader: Morph target animation not supported yet.' );
+						break;
+
 				}
 
 			}
@@ -738,7 +753,7 @@ THREE.ColladaLoader.prototype = {
 
 			var data = {
 				sources: {}
-			}
+			};
 
 			for ( var i = 0, l = xml.childNodes.length; i < l; i ++ ) {
 
@@ -777,7 +792,7 @@ THREE.ColladaLoader.prototype = {
 
 			var data = {
 				inputs: {}
-			}
+			};
 
 			for ( var i = 0, l = xml.childNodes.length; i < l; i ++ ) {
 
@@ -805,7 +820,7 @@ THREE.ColladaLoader.prototype = {
 
 			var data = {
 				inputs: {}
-			}
+			};
 
 			for ( var i = 0, l = xml.childNodes.length; i < l; i ++ ) {
 
@@ -840,16 +855,22 @@ THREE.ColladaLoader.prototype = {
 
 		function buildController( data ) {
 
-			var build = {};
-
-			build.id = data.id;
-			build.skin = buildSkin( data.skin );
-
-			// we enhance the 'sources' property of the corresponding geometry with our skin data
+			var build = {
+				id: data.id
+			};
 
 			var geometry = library.geometries[ build.id ];
-			geometry.sources.skinIndices = build.skin.indices;
-			geometry.sources.skinWeights = build.skin.weights;
+
+			if ( data.skin !== undefined ) {
+
+				build.skin = buildSkin( data.skin );
+
+				// we enhance the 'sources' property of the corresponding geometry with our skin data
+
+				geometry.sources.skinIndices = build.skin.indices;
+				geometry.sources.skinWeights = build.skin.weights;
+
+			}
 
 			return build;
 
@@ -1381,7 +1402,7 @@ THREE.ColladaLoader.prototype = {
 
 					var extra = textureObject.extra;
 
-					if ( extra !== undefined && extra.technique !== undefined  && isEmpty( extra.technique ) === false ) {
+					if ( extra !== undefined && extra.technique !== undefined && isEmpty( extra.technique ) === false ) {
 
 						var technique = extra.technique;
 
@@ -1603,7 +1624,17 @@ THREE.ColladaLoader.prototype = {
 
 		function getCamera( id ) {
 
-			return getBuild( library.cameras[ id ], buildCamera );
+			var data = library.cameras[ id ];
+
+			if ( data !== undefined ) {
+
+				return getBuild( data, buildCamera );
+
+			}
+
+			console.warn( 'THREE.ColladaLoader: Couldn\'t find camera with ID:', id );
+
+			return null;
 
 		}
 
@@ -1728,7 +1759,17 @@ THREE.ColladaLoader.prototype = {
 
 		function getLight( id ) {
 
-			return getBuild( library.lights[ id ], buildLight );
+			var data = library.lights[ id ];
+
+			if ( data !== undefined ) {
+
+				return getBuild( data, buildLight );
+
+			}
+
+			console.warn( 'THREE.ColladaLoader: Couldn\'t find light with ID:', id );
+
+			return null;
 
 		}
 
@@ -1744,6 +1785,9 @@ THREE.ColladaLoader.prototype = {
 			};
 
 			var mesh = getElementsByTagName( xml, 'mesh' )[ 0 ];
+
+			// the following tags inside geometry are not supported yet (see https://github.com/mrdoob/three.js/pull/12606): convex_mesh, spline, brep
+			if ( mesh === undefined ) return;
 
 			for ( var i = 0; i < mesh.childNodes.length; i ++ ) {
 
@@ -1850,7 +1894,7 @@ THREE.ColladaLoader.prototype = {
 			var primitive = {
 				type: xml.nodeName,
 				material: xml.getAttribute( 'material' ),
-				count:  parseInt( xml.getAttribute( 'count' ) ),
+				count: parseInt( xml.getAttribute( 'count' ) ),
 				inputs: {},
 				stride: 0
 			};
@@ -1949,7 +1993,6 @@ THREE.ColladaLoader.prototype = {
 			var materialKeys = [];
 
 			var start = 0, count = 0;
-			var array;
 
 			for ( var p = 0; p < primitives.length; p ++ ) {
 
@@ -1997,7 +2040,7 @@ THREE.ColladaLoader.prototype = {
 						case 'VERTEX':
 							for ( var key in vertices ) {
 
-								var id =  vertices[ key ];
+								var id = vertices[ key ];
 
 								switch ( key ) {
 
@@ -2165,7 +2208,7 @@ THREE.ColladaLoader.prototype = {
 
 			var data = {
 				name: xml.getAttribute( 'name' ) || '',
-				joints: [],
+				joints: {},
 				links: []
 			};
 
@@ -2187,7 +2230,7 @@ THREE.ColladaLoader.prototype = {
 
 			library.kinematicsModels[ xml.getAttribute( 'id' ) ] = data;
 
-		};
+		}
 
 		function buildKinematicsModel( data ) {
 
@@ -2214,7 +2257,7 @@ THREE.ColladaLoader.prototype = {
 				switch ( child.nodeName ) {
 
 					case 'joint':
-						data.joints.push( parseKinematicsJoint( child ) );
+						data.joints[ child.getAttribute( 'sid' ) ] = parseKinematicsJoint( child );
 						break;
 
 					case 'link':
@@ -2255,7 +2298,7 @@ THREE.ColladaLoader.prototype = {
 		function parseKinematicsJointParameter( xml, data ) {
 
 			var data = {
-				sid:  xml.getAttribute( 'sid' ),
+				sid: xml.getAttribute( 'sid' ),
 				name: xml.getAttribute( 'name' ) || '',
 				axis: new THREE.Vector3(),
 				limits: {
@@ -2452,7 +2495,8 @@ THREE.ColladaLoader.prototype = {
 					case 'axis':
 						var param = child.getElementsByTagName( 'param' )[ 0 ];
 						data.axis = param.textContent;
-						data.jointIndex = parseInt( data.axis.split( 'joint' ).pop().split( '.' )[ 0 ] );
+						var tmpJointIndex = data.axis.split( 'inst_' ).pop().split( 'axis' )[ 0 ];
+						data.jointIndex = tmpJointIndex.substr( 0, tmpJointIndex.length - 1 );
 						break;
 
 				}
@@ -2516,11 +2560,10 @@ THREE.ColladaLoader.prototype = {
 
 			function connect( jointIndex, visualElement ) {
 
-				var visualElementId = visualElement.getAttribute( 'id' );
 				var visualElementName = visualElement.getAttribute( 'name' );
 				var joint = kinematicsModel.joints[ jointIndex ];
 
-				visualScene.traverse( function( object ) {
+				visualScene.traverse( function ( object ) {
 
 					if ( object.name === visualElementName ) {
 
@@ -2535,7 +2578,7 @@ THREE.ColladaLoader.prototype = {
 
 				} );
 
-			};
+			}
 
 			var m0 = new THREE.Matrix4();
 
@@ -2543,7 +2586,7 @@ THREE.ColladaLoader.prototype = {
 
 				joints: kinematicsModel && kinematicsModel.joints,
 
-				getJointValue: function( jointIndex ) {
+				getJointValue: function ( jointIndex ) {
 
 					var jointData = jointMap[ jointIndex ];
 
@@ -2559,7 +2602,7 @@ THREE.ColladaLoader.prototype = {
 
 				},
 
-				setJointValue: function( jointIndex, value ) {
+				setJointValue: function ( jointIndex, value ) {
 
 					var jointData = jointMap[ jointIndex ];
 
@@ -2591,7 +2634,7 @@ THREE.ColladaLoader.prototype = {
 
 								// if there is a connection of the transform node with a joint, apply the joint value
 
-								if ( transform.sid && transform.sid.indexOf( 'joint' + jointIndex ) !== -1 ) {
+								if ( transform.sid && transform.sid.indexOf( jointIndex ) !== - 1 ) {
 
 									switch ( joint.type ) {
 
@@ -2693,7 +2736,7 @@ THREE.ColladaLoader.prototype = {
 						var array = parseFloats( child.textContent );
 						var vector = new THREE.Vector3().fromArray( array );
 						var angle = THREE.Math.degToRad( array[ 3 ] );
-						transforms.push({
+						transforms.push( {
 							sid: child.getAttribute( 'sid' ),
 							type: child.nodeName,
 							obj: vector,
@@ -2711,13 +2754,33 @@ THREE.ColladaLoader.prototype = {
 
 		// nodes
 
+		function prepareNodes( xml ) {
+
+			var elements = xml.getElementsByTagName( 'node' );
+
+			// ensure all node elements have id attributes
+
+			for ( var i = 0; i < elements.length; i ++ ) {
+
+				var element = elements[ i ];
+
+				if ( element.hasAttribute( 'id' ) === false ) {
+
+					element.setAttribute( 'id', generateId() );
+
+				}
+
+			}
+
+		}
+
 		var matrix = new THREE.Matrix4();
 		var vector = new THREE.Vector3();
 
 		function parseNode( xml ) {
 
 			var data = {
-				name: xml.getAttribute( 'name' ),
+				name: xml.getAttribute( 'name' ) || '',
 				type: xml.getAttribute( 'type' ),
 				id: xml.getAttribute( 'id' ),
 				sid: xml.getAttribute( 'sid' ),
@@ -2740,14 +2803,8 @@ THREE.ColladaLoader.prototype = {
 				switch ( child.nodeName ) {
 
 					case 'node':
-
-						if ( child.hasAttribute( 'id' ) ) {
-
-							data.nodes.push( child.getAttribute( 'id' ) );
-							parseNode( child );
-
-						}
-
+						data.nodes.push( child.getAttribute( 'id' ) );
+						parseNode( child );
 						break;
 
 					case 'instance_camera':
@@ -2806,11 +2863,7 @@ THREE.ColladaLoader.prototype = {
 
 			}
 
-			if ( xml.hasAttribute( 'id' ) ) {
-
-				library.nodes[ xml.getAttribute( 'id' ) ] = data;
-
-			}
+			library.nodes[ data.id ] = data;
 
 			return data;
 
@@ -2938,7 +2991,7 @@ THREE.ColladaLoader.prototype = {
 
 			// setup bone data from visual scene
 
-			root.traverse( function( object ) {
+			root.traverse( function ( object ) {
 
 				if ( object.isBone === true ) {
 
@@ -3004,7 +3057,13 @@ THREE.ColladaLoader.prototype = {
 
 			for ( var i = 0, l = instanceCameras.length; i < l; i ++ ) {
 
-				objects.push( getCamera( instanceCameras[ i ] ).clone() );
+				var instanceCamera = getCamera( instanceCameras[ i ] );
+
+				if ( instanceCamera !== null ) {
+
+					objects.push( instanceCamera.clone() );
+
+				}
 
 			}
 
@@ -3043,7 +3102,13 @@ THREE.ColladaLoader.prototype = {
 
 			for ( var i = 0, l = instanceLights.length; i < l; i ++ ) {
 
-				objects.push( getLight( instanceLights[ i ] ).clone() );
+				var instanceLight = getLight( instanceLights[ i ] );
+
+				if ( instanceLight !== null ) {
+
+					objects.push( instanceLight.clone() );
+
+				}
 
 			}
 
@@ -3212,6 +3277,8 @@ THREE.ColladaLoader.prototype = {
 				children: []
 			};
 
+			prepareNodes( xml );
+
 			var elements = getElementsByTagName( xml, 'node' );
 
 			for ( var i = 0; i < elements.length; i ++ ) {
@@ -3337,6 +3404,7 @@ THREE.ColladaLoader.prototype = {
 
 		var animations = [];
 		var kinematics = {};
+		var count = 0;
 
 		//
 
