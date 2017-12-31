@@ -46,6 +46,7 @@
         <FileResource type="JS" file="loaders/PVRLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/STLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/SVGLoader.js" description="" isDevelopment="false" isRuntime="true"/>
+        <FileResource type="JS" file="loaders/GCodeLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/GLTFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/deprecated/LegacyGLTFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
         <FileResource type="JS" file="loaders/TGALoader.js" description="" isDevelopment="false" isRuntime="true"/>

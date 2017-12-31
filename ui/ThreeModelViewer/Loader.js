@@ -72,6 +72,13 @@ var Loader = function (widget) {
 
 				break;
 
+			case 'gcode':
+				new THREE.GCodeLoader().load(url, function (mesh) {
+					buildCallback(mesh, callback);
+				});
+
+				break;
+				
 			case 'babylonmeshdata':
 				new THREE.FileLoader().load(url, function name(text) {
 					var json = JSON.parse(text);
@@ -363,7 +370,7 @@ var Loader = function (widget) {
 				break;
 			case 'prwm':
 				new THREE.PRWMLoader().load(url, function (geometry) {
-					var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({}) );
+					var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({}));
 					buildCallback(mesh, callback);
 				});
 

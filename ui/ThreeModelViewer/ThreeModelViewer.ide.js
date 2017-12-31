@@ -95,6 +95,9 @@ TW.IDE.Widgets.ThreeModelViewer = function () {
                         value: 'gltf1',
                         text: 'LegacyGLTF'
                     }, {
+                        value: 'gcode',
+                        text: 'gcode'
+                    }, {
                         value: 'assimpjson',
                         text: 'assimpjson'
                     }, {
