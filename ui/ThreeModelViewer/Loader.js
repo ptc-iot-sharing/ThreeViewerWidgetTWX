@@ -78,7 +78,7 @@ var Loader = function (widget) {
 				});
 
 				break;
-				
+
 			case 'babylonmeshdata':
 				new THREE.FileLoader().load(url, function name(text) {
 					var json = JSON.parse(text);
@@ -198,32 +198,24 @@ var Loader = function (widget) {
 
 			case 'js':
 			case 'json':
-
 			case '3geo':
 			case '3mat':
 			case '3obj':
 			case '3scn':
-
 				new THREE.FileLoader().load(url, function name(contents) {
-
 					// 2.0
-
 					if (contents.indexOf('postMessage') !== -1) {
-
 						var blob = new Blob([contents], {
 							type: 'text/javascript'
 						});
 						var url = URL.createObjectURL(blob);
-
 						var worker = new Worker(url);
 
 						worker.onmessage = function (event) {
-
 							event.data.metadata = {
 								version: 2
 							};
-							handleJSON(event.data, file, texturePath);
-
+							handleJSON(event.data, file, texturePath, callback);
 						};
 
 						worker.postMessage(Date.now());
@@ -231,28 +223,19 @@ var Loader = function (widget) {
 						return;
 
 					}
-
 					// >= 3.0
-
 					var data;
-
 					try {
-
 						data = JSON.parse(contents);
-
 					} catch (error) {
-
-						alert(error);
+						console.log("Failed to parse the JSON contents", error);
 						return;
-
 					}
 
-					handleJSON(data, modelType, texturePath);
+					handleJSON(data, modelType, texturePath, callback);
 
 				});
-
 				break;
-
 
 			case 'kmz':
 				new THREE.KMZLoader().load(url, function (collada) {
@@ -475,7 +458,7 @@ var Loader = function (widget) {
 				break;
 
 			default:
-
+				console.log("ThreeModelViewer: Failed to load unrecongnized extension " + extension);
 				alert('Unsupported file format (' + extension + ').');
 
 				break;
@@ -483,66 +466,44 @@ var Loader = function (widget) {
 		}
 	};
 
-	function handleJSON(data, filename, texturePath) {
+	function handleJSON(data, filename, texturePath, callback) {
 
 		if (data.metadata === undefined) { // 2.0
-
 			data.metadata = {
 				type: 'Geometry'
 			};
-
 		}
 
 		if (data.metadata.type === undefined) { // 3.0
-
 			data.metadata.type = 'Geometry';
-
 		}
 
 		if (data.metadata.formatVersion !== undefined) {
-
 			data.metadata.version = data.metadata.formatVersion;
-
 		}
 
 		switch (data.metadata.type.toLowerCase()) {
-
 			case 'buffergeometry':
-
 				var loader = new THREE.BufferGeometryLoader();
 				var result = loader.parse(data);
-
 				var mesh = new THREE.Mesh(result);
-
-				widget.addObjectCommand(mesh);
-
+				buildCallback(mesh, callback);
 				break;
 
 			case 'geometry':
-
 				var loader = new THREE.JSONLoader();
-
 				var result = loader.parse(data);
-
 				var geometry = result.geometry;
 				var material;
 
 				if (result.materials !== undefined) {
-
 					if (result.materials.length > 1) {
-
 						material = new THREE.MultiMaterial(result.materials);
-
 					} else {
-
 						material = result.materials[0];
-
 					}
-
 				} else {
-
 					material = new THREE.MeshStandardMaterial();
-
 				}
 
 				geometry.sourceType = "ascii";
@@ -551,19 +512,12 @@ var Loader = function (widget) {
 				var mesh;
 
 				if (geometry.animation && geometry.animation.hierarchy) {
-
 					mesh = new THREE.SkinnedMesh(geometry, material);
-
 				} else {
-
 					mesh = new THREE.Mesh(geometry, material);
-
 				}
-
 				mesh.name = filename;
-
-				widget.addObjectCommand(mesh);
-
+				buildCallback(mesh, callback);
 				break;
 
 			case 'object':
@@ -572,25 +526,15 @@ var Loader = function (widget) {
 				loader.texturePath = texturePath;
 
 				var result = loader.parse(data);
-
-				if (result instanceof THREE.Scene) {
-
-					widget.setSceneCommand(result);
-				} else {
-					widget.addObjectCommand(result);
-				}
+				buildCallback(result, callback);
 
 				break;
 
 			case 'scene':
-
 				// DEPRECATED
-
 				var loader = new THREE.SceneLoader();
 				loader.parse(data, function (result) {
-
-					widget.setSceneCommand(result.scene);
-
+					buildCallback(result, callback);
 				}, texturePath);
 
 				break;
