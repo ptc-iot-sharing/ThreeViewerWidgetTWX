@@ -1,10 +1,10 @@
 {
     "name": "ThreeModelViewer",
-    "version": "1.4.191",
+    "version": "1.4.199",
     "description": "Three.JS model viewer for thingworx",
-    "thingworxServer": "http://localhost:8016/",
+    "thingworxServer": "http://localhost:8003/",
     "thingworxUser": "Administrator",
-    "thingworxPassword": "trUf6yuz2?_Gub",
+    "thingworxPassword": "admin",
     "author": "Thingworx RoIcenter",
     "minimumThingWorxVersion": "6.0.0",
     "homepage": "http://roicentersvn/placatus/DemoWebpackWidget",
@@ -53,7 +53,7 @@
     "dependencies": {
         "@tweenjs/tween.js": "^17.2.0",
         "stats-js": "^1.0.0-alpha1",
-        "three-full": "^6.0.0",
-        "three": "latest"
+        "three": "^0.91.0",
+        "three-full": "^6.0.0"
     }
 }

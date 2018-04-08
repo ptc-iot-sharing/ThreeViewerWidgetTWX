@@ -5,9 +5,12 @@
  */
 import * as THREE from 'three';
 import { Detector } from '../../node_modules/three-full/sources/helpers/Detector';
+import { TransformControls } from '../../node_modules/three-full/sources/controls/TransformControls';
+import { OrbitControls } from '../../node_modules/three-full/sources/controls/OrbitControls';
 import { EventsControls } from './EventControls';
 import { rgba2hex } from './utilities';
 import { Stats } from 'stats-js';
+import { ModelLoaderFactory } from './Loader'
 
 export interface RendererOptions {
     helpers: {
@@ -44,7 +47,7 @@ export interface RendererOptions {
         /**
          * Color of the selected material
          */
-        selectedMaterial: THREE.Color
+        selectedMaterial: string
     },
     controls: {
         /**
@@ -66,9 +69,16 @@ export interface RendererOptions {
          * Camera automatically orbits the object
          */
         cameraAutoRotate: boolean
+    },
+    position: {
+        /**
+         * Offset on the Y axes of the model
+         */
+        modelYOffset: number
     }
 }
 export class ModelRenderer {
+    options: RendererOptions;
     /**
      * Current scene in the model
      */
@@ -94,6 +104,10 @@ export class ModelRenderer {
      */
     public eventControls: any;
 
+    /**
+     *  Since we can rotate the mode, expose the pivot and camera target to the function
+    */
+    private pivot: THREE.Group;
     /**
      * Renderer for the scene
      */
@@ -132,6 +146,11 @@ export class ModelRenderer {
             group.add(new THREE.GridHelper(20, 10));
         }
         this.initializeLights(options);
+        this.pivot = new THREE.Group();
+        this.pivot.rotation.order = "YXZ";
+        this.camera.position.z = 4;
+        this.camera.position.y = 12;
+        this.camera.position.x = 7;
     }
 
     /**
@@ -271,7 +290,7 @@ export class ModelRenderer {
      */
     initializeOrbitControls(options: RendererOptions) {
         // add the orbit controls
-        this.orbitControls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
         // enable of disable the camera controls
         this.orbitControls.enableZoom = options.controls.cameraControls;
         this.orbitControls.enableKeys = options.controls.cameraControls;
@@ -289,7 +308,7 @@ export class ModelRenderer {
      * Initializes the transform controls on this renderer
      */
     initializeTransformControls() {
-        this.transformControls = new THREE.TransformControls(this.camera, this.renderer.domElement);
+        this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
         // TODO: should not add stuff on window
         window.addEventListener('keydown', (event) => {
             switch (event.keyCode) {
@@ -338,10 +357,13 @@ export class ModelRenderer {
         this.eventControls = new EventsControls(this.camera, this.renderer.domElement);
         // easy fix for losing this reference
         let transformControls = this.transformControls;
+        let selectedMaterial = new THREE.MeshPhongMaterial({
+            color: new THREE.Color(options.style.selectedMaterial)
+        });
         this.eventControls.attachEvent('mouseOver', function () {
             this.container.style.cursor = 'pointer';
             this.mouseOvered.oldMaterial = this.mouseOvered.material;
-            this.mouseOvered.material = options.style.selectedMaterial;
+            this.mouseOvered.material = selectedMaterial;
 
         });
 
@@ -371,7 +393,8 @@ export class ModelRenderer {
      * @param parent Parent element where the rendering will occur
      * @param options Rendering options
      */
-    public initializeRenderer(parent: Element, options: RendererOptions) {
+    public constructor(parent: Element, options: RendererOptions) {
+        this.options = options;
         // verify if webgl is supported. 
         if (!Detector.webgl) {
             Detector.addGetWebGLMessage({ parent: parent });
@@ -463,5 +486,76 @@ export class ModelRenderer {
      */
     stopRendering() {
         window.cancelAnimationFrame(this.frameRequest);
+    }
+
+    async loadModel(modelUrl: string, modelType: string, texturePath: string) {
+        // try to optain the model type
+        modelType = (!modelType || modelType == "Auto-Detect") ? modelUrl.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
+        // handle the texture path. If it's set, then use it. If not, get it from the modelUrl
+        texturePath = texturePath ? texturePath : modelUrl.substring(0, modelUrl.lastIndexOf("/") + 1);
+        let loaderBuilder = ModelLoaderFactory.getRenderer(modelType);
+        let loader = new loaderBuilder(modelUrl, texturePath);
+        let model = await loader.load();
+        this.addObject3dToScene(model);
+    }
+
+    addObject3dToScene(model: THREE.Object3D) {
+        // TODO:
+        // if (!defaultScene || thisWidget.getProperty("ResetSceneOnModelChange")) {
+        //      thisWidget.initializeScene();
+        // }
+        // TODO: if we have a callback set, then add it to the list
+        /*if (renderCallback) {
+            renderCallbacks.push(renderCallback);
+        }
+   */
+        if (this.eventControls) {
+            model.traverseVisible(function (child) {
+                if ((<THREE.Mesh>child).isMesh) {
+                    this.eventControls.attach(child);
+                }
+            });
+        }
+
+        var bbox = new THREE.Box3().setFromObject(model);
+        // if the model is a bit too big or too small, we'll try to scale it a bit.
+        // this means scaling a model of a bbox of 600 down by 0.05
+        var scaleVector = new THREE.Vector3(1, 1, 1);
+        scaleVector.setLength(30 / bbox.max.length());
+        model.scale.copy(scaleVector);
+        // recompute the bbox after scaling
+        bbox = new THREE.Box3().setFromObject(model);
+
+        // make sure that the bbox is not infinity
+        if (isFinite(bbox.max.length())) {
+            bbox.getCenter(model.position); // this re-sets the model position
+            model.position.multiplyScalar(-1);
+            this.pivot.position.y = bbox.max.y / 2 + this.options.position.modelYOffset;
+            this.pivot.add(model);
+            var cameraPos = bbox.min.clone();
+            // this is a bit of a hack. But it moves the camera 2.5 times the vector away to the max bbox
+            cameraPos.x = Math.abs(cameraPos.x);
+            cameraPos.y = Math.abs(cameraPos.y);
+            cameraPos.z = Math.abs(cameraPos.z);
+
+            cameraPos.setLength(cameraPos.length() * 2.6);
+            this.camera.position.copy(cameraPos);
+        } else {
+            console.error("Failed to set camera position. Bounding box was infinity");
+        }
+        // if the pivot has the model inside, then add the pivot to the scene
+        if (this.pivot.children.length > 0) {
+            this.scene.add(this.pivot);
+        } else {
+            this.scene.add(model);
+        }
+        // TODO: MIXER
+        /*if (mixer) {
+            mixer.stopAllAction();
+        }
+        mixer = new THREE.AnimationMixer(scene);
+        */
+        console.log("Changed model");
+        //TODO: thisWidget.buildSceneTree(model);
     }
 }

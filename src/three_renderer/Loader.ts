@@ -63,7 +63,7 @@ interface ModelLoaderConstructor {
     new(url, texturePath): ModelLoader;
 }
 
-class ModelLoaderFactory {
+export class ModelLoaderFactory {
     private static mapping: { [name: string]: ModelLoaderConstructor } = {
         "3mf": MfLoader,
         "3ds": TdsLoader,
@@ -71,7 +71,7 @@ class ModelLoaderFactory {
         "amf": AmfLoader
     }
 
-    static getCapabilityRenderer(modelType): ModelLoaderConstructor {
+    static getRenderer(modelType): ModelLoaderConstructor {
         if (this.mapping[modelType]) {
             return this.mapping[modelType];
         } else {
