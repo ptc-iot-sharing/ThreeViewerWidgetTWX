@@ -26,6 +26,10 @@ class ThreeModelViewer extends TWRuntimeWidget {
         let renderer = await import('./three_renderer/ModelRenderer');
         this.modelRenderer = new renderer.ModelRenderer(this.jqElement[0], this.widgetPropertiesToOptions());
         this.modelRenderer.render();
+        // load the initial model, if set
+        if(this.getProperty("modelUrl")) {
+            this.modelUrl = this.getProperty("modelUrl");
+        }
     }
 
     widgetPropertiesToOptions(): RendererOptions {

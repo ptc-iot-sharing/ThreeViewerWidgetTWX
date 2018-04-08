@@ -9,7 +9,7 @@ import { TransformControls } from '../../node_modules/three-full/sources/control
 import { OrbitControls } from '../../node_modules/three-full/sources/controls/OrbitControls';
 import { EventsControls } from './EventControls';
 import { rgba2hex } from './utilities';
-import { Stats } from 'stats-js';
+import * as Stats from 'stats-js';
 import { ModelLoaderFactory } from './Loader'
 
 export interface RendererOptions {
@@ -421,7 +421,7 @@ export class ModelRenderer {
         // enable statistics tracking if needed 
         if (options.helpers.showStats) {
             this.stats = new Stats();
-            parent.getElementsByClassName("stats")[0].appendChild(this.stats.dom);
+            parent.getElementsByClassName("stats")[0].appendChild(this.stats.domElement);
         }
         // setup Axes helpers
         if (options.helpers.drawAxesHelpers) {
