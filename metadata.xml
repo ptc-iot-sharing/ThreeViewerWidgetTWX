@@ -1,68 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><Entities>
   <ExtensionPackages>
-    <ExtensionPackage name="ThreeModelViewer_ExtensionPackage" description="3D Model Viewer Widget" vendor="ThingWorx Labs" packageVersion="1.4.190" minimumThingWorxVersion="6.0.0"/>
+    <ExtensionPackage name="" description="" vendor="" packageVersion="" minimumThingWorxVersion="" buildNumber=""/>
   </ExtensionPackages>
   <Widgets>
-    <Widget name="ThreeModelViewer">
-      <UIResources>
-        <FileResource type="JS" file="three.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="tween.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="ThreeModelViewer.ide.js" description="" isDevelopment="true" isRuntime="false"/>
-        <FileResource type="CSS" file="ThreeModelViewer.ide.css" description="" isDevelopment="true" isRuntime="false"/>
-        <FileResource type="JS" file="ThreeModelViewer.runtime.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="CSS" file="ThreeModelViewer.runtime.css" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="OrbitControls.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="Detector.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="Loader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/libs/jszip.min.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/libs/inflate.min.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/3MFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/AMFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/AssimpJSONLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/AssimpLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/AWDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/BabylonLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/BinaryLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/ColladaLoader2.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/ctm/ctm.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/ctm/CTMLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/ctm/lzma.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/CVThreeLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/DDSLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/deprecated/SceneLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/FBXLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="curves/NURBSCurve.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="curves/NURBSSurface.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="curves/NURBSUtils.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/KMZLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/MD2Loader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/MTLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/XLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/OBJLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/PCDLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/PDBLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/PlayCanvasLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/PLYLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/PVRLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/STLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/SVGLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/GCodeLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/GLTFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/deprecated/LegacyGLTFLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/TGALoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/UTF8Loader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/VRMLLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/VTKLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/sea3d/SEA3D.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/sea3d/SEA3DDeflate.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/sea3d/SEA3DLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/sea3d/SEA3DLZMA.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/sea3d/XSEA3DLegacy.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="loaders/draco/DRACOLoader.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="EventControls.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="TransformControls.js" description="" isDevelopment="false" isRuntime="true"/>
-        <FileResource type="JS" file="stats.min.js" description="" isDevelopment="false" isRuntime="true"/>
-      </UIResources>
+    <Widget name="">
+      <UIResources/>
     </Widget>
   </Widgets>
 </Entities>

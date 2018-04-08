@@ -1,4 +1,7 @@
-build/
-.gradle/
-zip/
+node_modules
+dist
+ui
+.gradle
+build
+zip
 Thingworx_Blank_ModelViewer/

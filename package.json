@@ -1,0 +1,59 @@
+{
+    "name": "ThreeModelViewer",
+    "version": "1.4.191",
+    "description": "Three.JS model viewer for thingworx",
+    "thingworxServer": "http://localhost:8016/",
+    "thingworxUser": "Administrator",
+    "thingworxPassword": "trUf6yuz2?_Gub",
+    "author": "Thingworx RoIcenter",
+    "minimumThingWorxVersion": "6.0.0",
+    "homepage": "http://roicentersvn/placatus/DemoWebpackWidget",
+    "autoUpdate": {
+        "giteaURL": "http://roicentersvn/api/v1/repos/placatus/DemoWebpackWidget/releases/latest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "http://roicentersvn.ptcnet.ptc.com/placatus/DemoWebpackWidget.git"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "webpack --mode production",
+        "watch": "webpack --watch --mode development",
+        "server": "webpack-dev-server --open",
+        "upload": "webpack --mode development --env.upload",
+        "init": "webpack --env.init"
+    },
+    "license": "ISC",
+    "devDependencies": {
+        "@babel/core": "^7.0.0-beta.40",
+        "@babel/preset-env": "^7.0.0-beta.40",
+        "@types/jquery": "^3.3.0",
+        "@types/node": "^8.9.4",
+        "@types/webpack-env": "^1.13.5",
+        "@types/three": "^0.91.3",
+        "awesome-typescript-loader": "^3.5.0",
+        "babel-loader": "^8.0.0-beta.2",
+        "clean-webpack-plugin": "^0.1.18",
+        "copy-webpack-plugin": "^4.5.0",
+        "css-loader": "^0.28.10",
+        "extract-text-webpack-plugin": "^3.0.2",
+        "file-loader": "^1.1.11",
+        "request": "^2.83.0",
+        "source-map-loader": "^0.2.3",
+        "style-loader": "^0.20.2",
+        "ts-loader": "^4.0.1",
+        "typescript": "^2.7.2",
+        "url-loader": "^1.0.1",
+        "webpack": "^4.1.0",
+        "webpack-cli": "^2.0.10",
+        "webpack-dev-server": "3.1.0",
+        "xml2js": "^0.4.19",
+        "zip-webpack-plugin": "^3.0.0"
+    },
+    "dependencies": {
+        "@tweenjs/tween.js": "^17.2.0",
+        "stats-js": "^1.0.0-alpha1",
+        "three-full": "^6.0.0",
+        "three": "latest"
+    }
+}
