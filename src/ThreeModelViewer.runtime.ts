@@ -52,6 +52,14 @@ class ThreeModelViewer extends TWRuntimeWidget {
             },
             position: {
                 modelYOffset: this.getProperty("ModelYOffset")
+            },
+            callbacks: {
+                loadedSucessful: () => {
+                    this.jqElement.triggerHandler("LoadDone");
+                },
+                loadingError: () => {
+                    this.jqElement.triggerHandler("LoadError");
+                }
             }
         }
     }

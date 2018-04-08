@@ -75,6 +75,10 @@ export interface RendererOptions {
          * Offset on the Y axes of the model
          */
         modelYOffset: number
+    },
+    callbacks: {
+        loadedSucessful: (url?: string)=>void;
+        loadingError: (url?: string)=>void;
     }
 }
 export class ModelRenderer {
@@ -218,7 +222,6 @@ export class ModelRenderer {
     renderAxesHelpers() {
         //copy position of the camera into inset
         this.insetCamera.position.copy(this.camera.position);
-        // TODO: Handle the controls in here
         this.insetCamera.position.sub(this.orbitControls.target);
         this.insetCamera.position.setLength(300);
         this.insetCamera.lookAt(this.insetScene.position);
@@ -257,7 +260,7 @@ export class ModelRenderer {
      * @param spinnerElement element to hide or show
      * @param options 
      */
-    initializeLoaderManagement(spinnerElement: HTMLElement, options: RendererOptions, loadingDoneCallback: () => void, loadingErrorCallback: () => void) {
+    initializeLoaderManagement(spinnerElement: HTMLElement, options: RendererOptions) {
         //@ts-ignore
         THREE.DefaultLoadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
             console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
@@ -274,13 +277,13 @@ export class ModelRenderer {
 
         THREE.DefaultLoadingManager.onProgress = function (url, itemsLoaded, itemsTotal) {
             console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
-            loadingDoneCallback();
+            options.callbacks.loadedSucessful(url);
         };
         //@ts-ignore
         THREE.DefaultLoadingManager.onError = function (url) {
             console.log('There was an error loading ' + url);
             spinnerElement.style.display = 'block';
-            loadingErrorCallback()
+            options.callbacks.loadingError(url);
         };
 
     }
@@ -424,8 +427,8 @@ export class ModelRenderer {
         if (options.helpers.drawAxesHelpers) {
             this.initializeAxesHelpers(<HTMLElement>parent.getElementsByClassName("inset")[0]);
         }
-        // TODO: call the loading events here!
-        this.initializeLoaderManagement(<HTMLElement>parent.getElementsByClassName('spinner')[0], options, () => { }, () => { });
+        // initialize the default loader
+        this.initializeLoaderManagement(<HTMLElement>parent.getElementsByClassName('spinner')[0], options);
 
         // handle the color of the renderer
         if (options.style.backgroundColor.startsWith("rgba")) {
