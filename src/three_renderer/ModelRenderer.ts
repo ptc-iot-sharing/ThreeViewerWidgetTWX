@@ -77,8 +77,9 @@ export interface RendererOptions {
         modelYOffset: number
     },
     callbacks: {
-        loadedSucessful: (url?: string)=>void;
-        loadingError: (url?: string)=>void;
+        loadedSucessful: (url?: string) => void;
+        loadingError: (url?: string) => void;
+        selectedItemChanged: (itemName: string, itemId: string) => void;
     }
 }
 export class ModelRenderer {
@@ -357,7 +358,7 @@ export class ModelRenderer {
     /**
      * Initializes event controls for selection handling
      */
-    initializeEventControls(options: RendererOptions, selectedItemCallback: (item, name) => void) {
+    initializeEventControls(options: RendererOptions) {
         this.eventControls = new EventsControls(this.camera, this.renderer.domElement);
         // easy fix for losing this reference
         let transformControls = this.transformControls;
@@ -386,7 +387,7 @@ export class ModelRenderer {
                 transformControls.detach();
                 transformControls.attach(this.event.object);
             }
-            selectedItemCallback(this.event.item, objectName);
+            options.callbacks.selectedItemChanged(this.event.item, objectName);
         });
 
     }
@@ -447,6 +448,11 @@ export class ModelRenderer {
         // enable the transform controls if needed
         if (options.controls.transformControls) {
             this.initializeTransformControls();
+        }
+        // enable the event controls if needed
+        if (options.controls.enableSelection) {
+            this.initializeEventControls(options);
+
         }
     }
 
@@ -513,9 +519,9 @@ export class ModelRenderer {
         /*if (renderCallback) {
             renderCallbacks.push(renderCallback);
         }
-   */
+    */
         if (this.eventControls) {
-            model.traverseVisible(function (child) {
+            model.traverseVisible( (child) => {
                 if ((<THREE.Mesh>child).isMesh) {
                     this.eventControls.attach(child);
                 }

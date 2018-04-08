@@ -52,7 +52,7 @@ class ThreeModelViewer extends TWRuntimeWidget {
             style: {
                 backgroundColor: backgroundColor,
                 lightIntensity: this.getProperty("LightIntensity"),
-                selectedMaterial: '0x00d9ff'
+                selectedMaterial: '#00d9ff'
             },
             position: {
                 modelYOffset: this.getProperty("ModelYOffset")
@@ -63,6 +63,10 @@ class ThreeModelViewer extends TWRuntimeWidget {
                 },
                 loadingError: () => {
                     this.jqElement.triggerHandler("LoadError");
+                },
+                selectedItemChanged: (item, name) => {
+                    this.setProperty("SelectedItem", item);
+                    this.setProperty("SelectedItemName", name);
                 }
             }
         }
@@ -89,6 +93,8 @@ class ThreeModelViewer extends TWRuntimeWidget {
         throw new Error("Method not implemented.");
     }
     beforeDestroy?(): void {
-        // resetting current widget
+        if(this.modelRenderer) {
+            this.modelRenderer.stopRendering();
+        }
     }
 }
