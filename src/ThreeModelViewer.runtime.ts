@@ -20,6 +20,7 @@ class ThreeModelViewer extends TWRuntimeWidget {
     };
 
     async afterRender(): Promise<void> {
+        require("./styles/ThreeModelViewer.runtime.css");
         let renderer = await import('./three_renderer/ModelRenderer');
         this.modelRenderer = new renderer.ModelRenderer(this.jqElement[0], this.widgetPropertiesToOptions());
         this.modelRenderer.render();

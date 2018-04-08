@@ -1,6 +1,6 @@
 {
     "name": "ThreeModelViewer",
-    "version": "1.4.199",
+    "version": "1.4.201",
     "description": "Three.JS model viewer for thingworx",
     "thingworxServer": "http://localhost:8003/",
     "thingworxUser": "Administrator",

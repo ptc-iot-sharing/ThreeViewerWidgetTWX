@@ -433,7 +433,8 @@ export class ModelRenderer {
         } else {
             this.renderer.setClearColor(options.style.backgroundColor);
         }
-
+        // make the canvas responsive
+        this.initializeResponsiveCanvas(canvas);
         // initialize the scene now
         this.initializeScene(options);
 
