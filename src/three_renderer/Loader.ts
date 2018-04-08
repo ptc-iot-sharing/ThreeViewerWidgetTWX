@@ -59,6 +59,40 @@ export class AmfLoader extends ModelLoader {
     }
 }
 
+export class AssimpJsonLoader extends ModelLoader {
+    public async load(): Promise<THREE.Object3D> {
+        let loader = await import('../../node_modules/three-full/sources/loaders/AssimpJSONLoader');
+        return new Promise<THREE.Object3D>((resolve) => {
+            new loader.AssimpJSONLoader().load(this.url, (model: THREE.Object3D) => {
+                resolve(model);
+            })
+        });
+    }
+}
+
+export class AssimpLoader extends ModelLoader {
+    public async load(): Promise<THREE.Object3D> {
+        let loader = await import('../../node_modules/three-full/sources/loaders/AssimpLoader');
+        return new Promise<THREE.Object3D>((resolve) => {
+            new loader.AssimpLoader().load(this.url, (model: THREE.Object3D) => {
+                resolve(model);
+            })
+        });
+    }
+}
+
+export class AwdLoader extends ModelLoader {
+    public async load(): Promise<THREE.Object3D> {
+        let loader = await import('../../node_modules/three-full/sources/loaders/AWDLoader');
+        return new Promise<THREE.Object3D>((resolve) => {
+            new loader.AWDLoader().load(this.url, (model: THREE.Object3D) => {
+                resolve(model);
+            })
+        });
+    }
+}
+
+
 interface ModelLoaderConstructor {
     new(url, texturePath): ModelLoader;
 }
@@ -68,7 +102,10 @@ export class ModelLoaderFactory {
         "3mf": MfLoader,
         "3ds": TdsLoader,
         "tds": TdsLoader,
-        "amf": AmfLoader
+        "amf": AmfLoader,
+        "assimpjson": AssimpJsonLoader,
+        "assimp": AssimpLoader,
+        "awd": AwdLoader
     }
 
     static getRenderer(modelType): ModelLoaderConstructor {
