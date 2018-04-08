@@ -1,3 +1,5 @@
+/// <reference path="three_renderer/ModelRenderer.ts" />
+
 import { TWProperty, TWService, ThingworxRuntimeWidget } from './support/widgetRuntimeSupport';
 import { ModelRenderer, RendererOptions } from './three_renderer/ModelRenderer';
 
@@ -60,9 +62,9 @@ class ThreeModelViewer extends TWRuntimeWidget {
             case "SceneTree":
                 if (selectedRows.length > 0) {
                     // find the object that has this id
-                  //  var selectedObject = scene.getObjectById(selectedRows[0].id);
+                    //  var selectedObject = scene.getObjectById(selectedRows[0].id);
                     //selectedObject.oldMaterial = selectedObject.material;
-                   // selectedObject.material = selMaterial;
+                    // selectedObject.material = selMaterial;
                 }
                 break;
 

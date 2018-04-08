@@ -1,6 +1,6 @@
 {
     "name": "ThreeModelViewer",
-    "version": "1.4.201",
+    "version": "1.4.212",
     "description": "Three.JS model viewer for thingworx",
     "thingworxServer": "http://localhost:8003/",
     "thingworxUser": "Administrator",
@@ -44,8 +44,8 @@
         "ts-loader": "^4.0.1",
         "typescript": "^2.7.2",
         "url-loader": "^1.0.1",
-        "webpack": "^4.1.0",
-        "webpack-cli": "^2.0.10",
+        "webpack": "^4.5.0",
+        "webpack-cli": "^2.0.14",
         "webpack-dev-server": "3.1.0",
         "xml2js": "^0.4.19",
         "zip-webpack-plugin": "^3.0.0"

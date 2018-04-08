@@ -258,6 +258,7 @@ export class ModelRenderer {
      * @param options 
      */
     initializeLoaderManagement(spinnerElement: HTMLElement, options: RendererOptions, loadingDoneCallback: () => void, loadingErrorCallback: () => void) {
+        //@ts-ignore
         THREE.DefaultLoadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
             console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
             if (options.helpers.showDataLoading) {
@@ -275,7 +276,7 @@ export class ModelRenderer {
             console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
             loadingDoneCallback();
         };
-
+        //@ts-ignore
         THREE.DefaultLoadingManager.onError = function (url) {
             console.log('There was an error loading ' + url);
             spinnerElement.style.display = 'block';

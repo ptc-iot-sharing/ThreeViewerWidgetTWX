@@ -573,7 +573,7 @@ declare abstract class TWComposerWidget extends TWWidget {
      * @return          The corresponding infotable. This may either be the name of an existing data shape
      *                  defined in the platform, or an object describing the data shape.
      */
-    getSourceDatashape?(name: string): string?| TWDataShape?;
+    getSourceDatashape?(name: string): string?| TWDataShape?| Dictionary<TWFieldDefinition>;
 
     /**
      * Shows this widget's bounding box, if it was hidden.
