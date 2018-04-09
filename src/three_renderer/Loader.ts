@@ -7,11 +7,13 @@
 abstract class ModelLoader {
     protected url: string;
     protected texturePath: string;
+    protected loadingManager: THREE.LoadingManager;
     
     
-    constructor(url: string, texturePath: string) {
+    constructor(url: string, texturePath: string, loadingManager: THREE.LoadingManager) {
         this.url = url;
         this.texturePath = texturePath;
+        this.loadingManager = loadingManager;
     }
 
     /**
@@ -29,8 +31,11 @@ export class DefaultLoader extends ModelLoader {
 export class MfLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
         let loader = await import('../../node_modules/three-full/sources/loaders/3MFLoader');
+        // also put JSZip on window as it's required
+        let jszipLoader = await import('jszip');
+        window["JSZip"] = jszipLoader.default;
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.ThreeMFLoader().load(this.url, (model: THREE.Object3D) => {
+            new loader.ThreeMFLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -41,7 +46,7 @@ export class TdsLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
         let loader = await import('../../node_modules/three-full/sources/loaders/TDSLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.TDSLoader().load(this.url, (model: THREE.Object3D) => {
+            new loader.TDSLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -52,7 +57,7 @@ export class AmfLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
         let loader = await import('../../node_modules/three-full/sources/loaders/AMFLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.AMFLoader().load(this.url, (model: THREE.Object3D) => {
+            new loader.AMFLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -63,7 +68,7 @@ export class AssimpJsonLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
         let loader = await import('../../node_modules/three-full/sources/loaders/AssimpJSONLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.AssimpJSONLoader().load(this.url, (model: THREE.Object3D) => {
+            new loader.AssimpJSONLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -85,7 +90,7 @@ export class AwdLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
         let loader = await import('../../node_modules/three-full/sources/loaders/AWDLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.AWDLoader().load(this.url, (model: THREE.Object3D) => {
+            new loader.AWDLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -94,7 +99,7 @@ export class AwdLoader extends ModelLoader {
 
 
 interface ModelLoaderConstructor {
-    new(url, texturePath): ModelLoader;
+    new(url: string, texturePath: string, loadingManager: THREE.LoadingManager): ModelLoader;
 }
 
 export class ModelLoaderFactory {
@@ -108,7 +113,7 @@ export class ModelLoaderFactory {
         "awd": AwdLoader
     }
 
-    static getRenderer(modelType): ModelLoaderConstructor {
+    static getLoader(modelType): ModelLoaderConstructor {
         if (this.mapping[modelType]) {
             return this.mapping[modelType];
         } else {

@@ -47,7 +47,11 @@ export interface RendererOptions {
         /**
          * Color of the selected material
          */
-        selectedMaterial: string
+        selectedMaterial: string;
+        /**
+         * Set to true if you want lights to be added to custom loaded scene files
+         */
+        addLightsToSceneFiles: boolean;
     },
     controls: {
         /**
@@ -80,6 +84,12 @@ export interface RendererOptions {
         loadedSucessful: (url?: string) => void;
         loadingError: (url?: string) => void;
         selectedItemChanged: (itemName: string, itemId: string) => void;
+    },
+    misc: {
+        /**
+         * Reset the scene when the model changes 
+         */
+        resetSceneOnModelChange: boolean
     }
 }
 export class ModelRenderer {
@@ -113,6 +123,11 @@ export class ModelRenderer {
      *  Since we can rotate the mode, expose the pivot and camera target to the function
     */
     private pivot: THREE.Group;
+
+    /**
+     * The loading manager to use in all the loaders
+     */
+    private loadingManager: THREE.LoadingManager;
     /**
      * Renderer for the scene
      */
@@ -135,6 +150,69 @@ export class ModelRenderer {
      */
     private frameRequest: number;
 
+    /**
+     * Main function that initializes all the objects in the renderer.
+     * 
+     * @param parent Parent element where the rendering will occur
+     * @param options Rendering options
+     */
+    public constructor(parent: Element, options: RendererOptions) {
+        this.options = options;
+        // verify if webgl is supported. 
+        if (!Detector.webgl) {
+            Detector.addGetWebGLMessage({ parent: parent });
+            throw "WebGL is not supported. Nothing will happen next."
+        }
+
+        // create the canvas where the drawing will take place
+        let canvas = document.createElement('canvas');
+        parent.appendChild(canvas);
+        // create the renderer
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            canvas: canvas,
+            alpha: true,
+            devicePixelRatio: window.devicePixelRatio
+        });
+        // create a camera 
+        this.camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
+
+        // enable statistics tracking if needed 
+        if (options.helpers.showStats) {
+            this.stats = new Stats();
+            parent.getElementsByClassName("stats")[0].appendChild(this.stats.domElement);
+        }
+        // setup Axes helpers
+        if (options.helpers.drawAxesHelpers) {
+            this.initializeAxesHelpers(<HTMLElement>parent.getElementsByClassName("inset")[0]);
+        }
+        // initialize the default loader
+        this.initializeLoaderManagement(<HTMLElement>parent.getElementsByClassName('spinner')[0], options);
+
+        // handle the color of the renderer
+        if (options.style.backgroundColor.startsWith("rgba")) {
+            let color = rgba2hex(options.style.backgroundColor);
+            this.renderer.setClearColor(color.color, color.opacity);
+        } else {
+            this.renderer.setClearColor(options.style.backgroundColor);
+        }
+        // make the canvas responsive
+        this.initializeResponsiveCanvas(canvas);
+        // initialize the scene now
+        this.initializeScene(options);
+
+        this.initializeOrbitControls(options);
+
+        // enable the transform controls if needed
+        if (options.controls.transformControls) {
+            this.initializeTransformControls();
+        }
+        // enable the event controls if needed
+        if (options.controls.enableSelection) {
+            this.initializeEventControls(options);
+
+        }
+    }
 
     /**
      * Handles the initialization of the scene, drawing lights, floors, etc
@@ -142,13 +220,10 @@ export class ModelRenderer {
      */
     public initializeScene(options: RendererOptions) {
         this.scene = new THREE.Scene();
-        // group for all utility objects
-        let group = new THREE.Group();
-
-        this.scene.add(group);
 
         if (options.helpers.drawGridHelpers) {
-            group.add(new THREE.GridHelper(20, 10));
+            // TODO: when loading AWD files, the grid helper is seriously broken.
+            this.scene.add(new THREE.GridHelper(30, 10));
         }
         this.initializeLights(options);
         this.pivot = new THREE.Group();
@@ -156,6 +231,8 @@ export class ModelRenderer {
         this.camera.position.z = 4;
         this.camera.position.y = 12;
         this.camera.position.x = 7;
+
+        this.scene["isModelViewerDefaultScene"] = true;
     }
 
     /**
@@ -164,6 +241,7 @@ export class ModelRenderer {
      */
     public initializeLights(options: RendererOptions) {
         let lightGroup = new THREE.Group();
+        lightGroup.name = "LightsGroup";
         // ambient light
         let ambientLight = new THREE.AmbientLight(0x404040); //, 0.8);
         lightGroup.add(ambientLight);
@@ -287,6 +365,7 @@ export class ModelRenderer {
             options.callbacks.loadingError(url);
         };
 
+        this.loadingManager = THREE.DefaultLoadingManager;
     }
 
     /**
@@ -393,70 +472,6 @@ export class ModelRenderer {
     }
 
     /**
-     * Main function that initializes all the objects in the renderer.
-     * 
-     * @param parent Parent element where the rendering will occur
-     * @param options Rendering options
-     */
-    public constructor(parent: Element, options: RendererOptions) {
-        this.options = options;
-        // verify if webgl is supported. 
-        if (!Detector.webgl) {
-            Detector.addGetWebGLMessage({ parent: parent });
-            throw "WebGL is not supported. Nothing will happen next."
-        }
-
-        // create the canvas where the drawing will take place
-        let canvas = document.createElement('canvas');
-        parent.appendChild(canvas);
-        // create the renderer
-        this.renderer = new THREE.WebGLRenderer({
-            antialias: true,
-            canvas: canvas,
-            alpha: true,
-            devicePixelRatio: window.devicePixelRatio
-        });
-        // create a camera 
-        this.camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
-
-        // enable statistics tracking if needed 
-        if (options.helpers.showStats) {
-            this.stats = new Stats();
-            parent.getElementsByClassName("stats")[0].appendChild(this.stats.domElement);
-        }
-        // setup Axes helpers
-        if (options.helpers.drawAxesHelpers) {
-            this.initializeAxesHelpers(<HTMLElement>parent.getElementsByClassName("inset")[0]);
-        }
-        // initialize the default loader
-        this.initializeLoaderManagement(<HTMLElement>parent.getElementsByClassName('spinner')[0], options);
-
-        // handle the color of the renderer
-        if (options.style.backgroundColor.startsWith("rgba")) {
-            let color = rgba2hex(options.style.backgroundColor);
-            this.renderer.setClearColor(color.color, color.opacity);
-        } else {
-            this.renderer.setClearColor(options.style.backgroundColor);
-        }
-        // make the canvas responsive
-        this.initializeResponsiveCanvas(canvas);
-        // initialize the scene now
-        this.initializeScene(options);
-
-        this.initializeOrbitControls(options);
-
-        // enable the transform controls if needed
-        if (options.controls.transformControls) {
-            this.initializeTransformControls();
-        }
-        // enable the event controls if needed
-        if (options.controls.enableSelection) {
-            this.initializeEventControls(options);
-
-        }
-    }
-
-    /**
      * Starts the render loop
      */
     public render = () => {
@@ -504,24 +519,58 @@ export class ModelRenderer {
         modelType = (!modelType || modelType == "Auto-Detect") ? modelUrl.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
         // handle the texture path. If it's set, then use it. If not, get it from the modelUrl
         texturePath = texturePath ? texturePath : modelUrl.substring(0, modelUrl.lastIndexOf("/") + 1);
-        let loaderBuilder = ModelLoaderFactory.getRenderer(modelType);
-        let loader = new loaderBuilder(modelUrl, texturePath);
-        let model = await loader.load();
-        this.addObject3dToScene(model);
+        let loaderBuilder = ModelLoaderFactory.getLoader(modelType);
+        let loader = new loaderBuilder(modelUrl, texturePath, this.loadingManager);
+        let object = await loader.load();
+        if (object.type == "Scene") {
+            this.setSceneCommand(<THREE.Scene>object);
+        } else {
+            this.addObject3dToScene(object);
+        }
     }
 
+    setSceneCommand(sceneObject: THREE.Scene) {
+        this.scene = sceneObject;
+        //TODO: handle mixers
+        //if (mixer) {
+        //   mixer.stopAllAction();
+        //}
+        //mixer = new THREE.AnimationMixer(scene);
+
+        if (this.eventControls) {
+            sceneObject.traverseVisible((child) => {
+                if ((<THREE.Mesh>child).isMesh) {
+                    this.eventControls.attach(child);
+                }
+            });
+        }
+        if (this.options.style.addLightsToSceneFiles) {
+            this.initializeLights(this.options);
+        }
+        // search the scene if we have a camera. If so, clone it
+        for (var index = 0; index < sceneObject.children.length; index++) {
+            var element = sceneObject.children[index];
+            if (element instanceof THREE.PerspectiveCamera) {
+                this.setCameraOptions(element);
+            }
+        }
+        console.log("Changed Scene");
+        // TODO: build sceneTRee
+        // thisWidget.buildSceneTree(scene);
+    };
+
     addObject3dToScene(model: THREE.Object3D) {
-        // TODO:
-        // if (!defaultScene || thisWidget.getProperty("ResetSceneOnModelChange")) {
-        //      thisWidget.initializeScene();
-        // }
+        if (!this.scene["isModelViewerDefaultScene"] || this.options.misc.resetSceneOnModelChange) {
+            this.initializeScene(this.options);
+            this.eventControls.objects = [];
+        }
         // TODO: if we have a callback set, then add it to the list
         /*if (renderCallback) {
             renderCallbacks.push(renderCallback);
         }
     */
         if (this.eventControls) {
-            model.traverseVisible( (child) => {
+            model.traverseVisible((child) => {
                 if ((<THREE.Mesh>child).isMesh) {
                     this.eventControls.attach(child);
                 }
@@ -568,5 +617,11 @@ export class ModelRenderer {
         */
         console.log("Changed model");
         //TODO: thisWidget.buildSceneTree(model);
+    }
+
+    setCameraOptions(newCamera: THREE.PerspectiveCamera) {
+        this.camera.position.copy(newCamera.position);
+        this.camera.rotation.copy(newCamera.rotation);
+
     }
 }

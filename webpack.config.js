@@ -165,7 +165,7 @@ module.exports = function (env, argv) {
                     result.Entities.ExtensionPackages[0].ExtensionPackage[0].$.packageVersion = packageJson.version;
                     // set the name of the widget itself
                     result.Entities.Widgets[0].Widget[0].$.name = packageJson.name;
-                    if(packageJson.autoUpdate) {
+                    if (packageJson.autoUpdate) {
                         result.Entities.ExtensionPackages[0].ExtensionPackage[0].$.buildNumber = JSON.stringify(packageJson.autoUpdate);
                     }
                     // if there is no file resourse set, then we must add a node in the xml

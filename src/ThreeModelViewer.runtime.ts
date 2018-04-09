@@ -52,7 +52,8 @@ class ThreeModelViewer extends TWRuntimeWidget {
             style: {
                 backgroundColor: backgroundColor,
                 lightIntensity: this.getProperty("LightIntensity"),
-                selectedMaterial: '#00d9ff'
+                selectedMaterial: 'rgb(0,217,255)',
+                addLightsToSceneFiles: this.getProperty("AddLightsToSceneFiles")
             },
             position: {
                 modelYOffset: this.getProperty("ModelYOffset")
@@ -68,6 +69,9 @@ class ThreeModelViewer extends TWRuntimeWidget {
                     this.setProperty("SelectedItem", item);
                     this.setProperty("SelectedItemName", name);
                 }
+            },
+            misc: {
+                resetSceneOnModelChange: this.getProperty("ResetSceneOnModelChange")
             }
         }
     }
