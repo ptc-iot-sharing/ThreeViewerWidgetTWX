@@ -499,6 +499,7 @@ export class ModelRenderer {
         if (this.eventControls) {
             this.eventControls.update();
         }
+        // TODO: transform controls don;t show up. Why?
         if (this.transformControls) {
             this.transformControls.update();
         }

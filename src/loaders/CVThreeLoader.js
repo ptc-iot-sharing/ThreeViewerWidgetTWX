@@ -1,4 +1,6 @@
 "use strict";
+import * as THREE from "three";
+
 var CVThreeLoader = (function() {
     var threeShapeVisitor;
     var threeStructureVisitor;
@@ -477,9 +479,8 @@ var CVThreeLoader = (function() {
     }
     
 })();
-"use strict";
 
-var Module = {
+window["Module"] = {
     'locateFile': function (name) {
         return ThingLoad.modulePath + name;
     },
@@ -572,6 +573,4 @@ var ThingLoad = (function () {
 })();
 
 
-
-
-
+export { CVThreeLoader }

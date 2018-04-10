@@ -104,6 +104,10 @@ module.exports = function (env, argv) {
                 {
                     test: /\.css$/,
                     use: ['style-loader', 'css-loader']
+                },
+                {
+                    test: /\.glsl$/,
+                    loader: 'webpack-glsl-loader'
                 }
             ]
         }
