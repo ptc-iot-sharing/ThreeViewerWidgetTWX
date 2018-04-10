@@ -1,11 +1,24 @@
 /// <reference path="three_renderer/ModelRenderer.ts" />
 
 import { TWProperty, TWService, ThingworxRuntimeWidget } from './support/widgetRuntimeSupport';
-import { ModelRenderer, RendererOptions } from './three_renderer/ModelRenderer';
+import { ModelRenderer, RendererOptions, PositionOptions } from './three_renderer/ModelRenderer';
+import { QuadraticBezierCurve } from 'three';
 
 @ThingworxRuntimeWidget
 class ThreeModelViewer extends TWRuntimeWidget {
     updateProperty(info: TWUpdatePropertyInfo): void {
+        this.setProperty(info.TargetProperty, info.SinglePropertyValue);
+        switch (info.TargetProperty) {
+            case "ModelYOffset":
+            case "Quaternion":
+            case "Rotation X":
+            case "Rotation Y":
+            case "Rotation Z":
+                this.modelRenderer.applyPositionChanges(this.widgetPositionPropertiesToOptions());                
+                break;        
+            default:
+                break;
+        }
     }
     /**
      * Main renderer taking care of displaying the model
@@ -25,6 +38,7 @@ class ThreeModelViewer extends TWRuntimeWidget {
         require("./styles/ThreeModelViewer.runtime.css");
         let renderer = await import('./three_renderer/ModelRenderer');
         this.modelRenderer = new renderer.ModelRenderer(this.jqElement[0], this.widgetPropertiesToOptions());
+        this.modelRenderer.applyPositionChanges(this.widgetPositionPropertiesToOptions());
         this.modelRenderer.render();
         // load the initial model, if set
         if(this.getProperty("modelUrl")) {
@@ -55,9 +69,6 @@ class ThreeModelViewer extends TWRuntimeWidget {
                 selectedMaterial: 'rgb(0,217,255)',
                 addLightsToSceneFiles: this.getProperty("AddLightsToSceneFiles")
             },
-            position: {
-                modelYOffset: this.getProperty("ModelYOffset")
-            },
             callbacks: {
                 loadedSucessful: () => {
                     this.jqElement.triggerHandler("LoadDone");
@@ -71,8 +82,20 @@ class ThreeModelViewer extends TWRuntimeWidget {
                 }
             },
             misc: {
-                resetSceneOnModelChange: this.getProperty("ResetSceneOnModelChange")
+                resetSceneOnModelChange: this.getProperty("ResetSceneOnModelChange"),
+                tweenInterval: this.getProperty("TweenInterval"),
+                enableQuaternionRotation: this.getProperty("EnableQuaternionRotation")
             }
+        }
+    }
+
+    widgetPositionPropertiesToOptions(): PositionOptions {
+        return {
+            modelYOffset: this.getProperty("ModelYOffset"),
+            rotationX: this.getProperty("Rotation Y"), // this are swapped for historical reasons
+            rotationY: this.getProperty("Rotation X"), 
+            rotationZ: this.getProperty("Rotation Z"),
+            quaternion: this.getProperty("Quaternion")
         }
     }
 

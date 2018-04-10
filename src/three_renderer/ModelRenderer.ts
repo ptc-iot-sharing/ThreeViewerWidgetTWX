@@ -4,6 +4,7 @@
  * Model renderer for three js supported files
  */
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 import { Detector } from '../../node_modules/three-full/sources/helpers/Detector';
 import { TransformControls } from '../../node_modules/three-full/sources/controls/TransformControls';
 import { OrbitControls } from '../../node_modules/three-full/sources/controls/OrbitControls';
@@ -12,6 +13,12 @@ import { rgba2hex } from './utilities';
 import * as Stats from 'stats-js';
 import { ModelLoaderFactory } from './Loader'
 
+/**
+ * List of rotation axis for the model
+ */
+enum Axis {
+    X = "x", Y = "y", Z = "z"
+}
 export interface RendererOptions {
     helpers: {
         /**
@@ -74,12 +81,6 @@ export interface RendererOptions {
          */
         cameraAutoRotate: boolean
     },
-    position: {
-        /**
-         * Offset on the Y axes of the model
-         */
-        modelYOffset: number
-    },
     callbacks: {
         loadedSucessful: (url?: string) => void;
         loadingError: (url?: string) => void;
@@ -89,11 +90,40 @@ export interface RendererOptions {
         /**
          * Reset the scene when the model changes 
          */
-        resetSceneOnModelChange: boolean
+        resetSceneOnModelChange: boolean;
+        /**
+         * How long to animate a rotation change
+         */
+        tweenInterval: number;
+
+        /**
+         * Whether quaternion rotation is enabled
+         */
+        enableQuaternionRotation: boolean;
     }
+}
+
+export interface PositionOptions {
+    /**
+     * Offset on the Y axes of the model
+     */
+    modelYOffset: number;
+    /**
+     * Rotations of the model
+     */
+    rotationX, rotationY, rotationZ: number;
+    /**
+     * Quaternon describing the rotation. Comma separated, no spaces
+     */
+    quaternion: string;
 }
 export class ModelRenderer {
     options: RendererOptions;
+    positionOptions: PositionOptions = <PositionOptions>{};
+    /**
+     * The tweens used for rotation and other animations
+     */
+    private tweens = {};
     /**
      * Current scene in the model
      */
@@ -483,8 +513,7 @@ export class ModelRenderer {
         //if (mixer) {
         //    mixer.update(clock.getDelta());
         //}
-        // TODO: handle TWEENING
-        //TWEEN.update();
+        TWEEN.update();
         this.orbitControls.update();
         // TODO: handle renderer callbacks
         // call each callback that came from the model
@@ -591,7 +620,7 @@ export class ModelRenderer {
         if (isFinite(bbox.max.length())) {
             bbox.getCenter(model.position); // this re-sets the model position
             model.position.multiplyScalar(-1);
-            this.pivot.position.y = bbox.max.y / 2 + this.options.position.modelYOffset;
+            this.pivot.position.y = bbox.max.y / 2 + this.positionOptions.modelYOffset;
             this.pivot.add(model);
             var cameraPos = bbox.min.clone();
             // this is a bit of a hack. But it moves the camera 2.5 times the vector away to the max bbox
@@ -624,5 +653,60 @@ export class ModelRenderer {
         this.camera.position.copy(newCamera.position);
         this.camera.rotation.copy(newCamera.rotation);
 
+    }
+    /**
+     * Updates the positions and rotation information of the model according to the given info
+     * @param options New position and rotation data
+     */
+    applyPositionChanges(options: PositionOptions) {
+        if (options.modelYOffset != this.positionOptions.modelYOffset) {
+            this.pivot.position.y = options.modelYOffset;
+        }
+
+        if (this.options.misc.enableQuaternionRotation) {
+            // build the quat from the string property
+            let tokens = (options.quaternion || "").split(",");
+            if (tokens.length === 4) {
+                let values = tokens.map(function (x) {
+                    return parseFloat(x.trim());
+                });
+                this.pivot.setRotationFromQuaternion(new THREE.Quaternion(values[0], values[1], values[2], values[3]));
+            }
+        } else {
+            // has changed, so update it
+            if (options.rotationX != this.positionOptions.rotationX) {
+                this.applyRotationOnAxis(options.rotationX, Axis.X, true);
+            }
+            if (options.rotationY != this.positionOptions.rotationY) {
+                this.applyRotationOnAxis(options.rotationZ, Axis.Y, true);
+            }
+            if (options.rotationZ != this.positionOptions.rotationZ) {
+                this.applyRotationOnAxis(options.rotationZ, Axis.Z, true);
+            }
+        }
+        // now save the options for later
+        this.positionOptions = options;
+    }
+    /**
+     * Rotates the pivon along the given axis to the new rotation.
+     * @param rotation In degress, what is the new rotation
+     * @param axis axis on which to rotate. Can be x, y, or z
+     * @param smooth if interpolation should be enabled or not for this movement
+     */
+    applyRotationOnAxis(rotation: number, axis: Axis, smooth: boolean) {
+        let angle = THREE.Math.degToRad(rotation);
+        THREE.Math.degToRad
+        if (smooth) {
+            let tweenName = "rot" + axis.toUpperCase();
+            if (this.tweens[tweenName]) {
+                this.tweens[tweenName].stop();
+            }
+            let animationInfo = {};
+            animationInfo[axis] = angle;
+            this.tweens[tweenName] = new TWEEN.Tween(this.pivot.rotation).to(animationInfo,
+                this.options.misc.tweenInterval).easing(TWEEN.Easing.Quadratic.Out).start();
+        } else {
+            this.pivot.rotation[axis] = rotation;
+        }
     }
 }
