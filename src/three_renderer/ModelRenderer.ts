@@ -4,10 +4,11 @@
  * Model renderer for three js supported files
  */
 import * as THREE from 'three';
+
 import * as TWEEN from '@tweenjs/tween.js';
-import { Detector } from '../../node_modules/three-full/sources/helpers/Detector';
-import { TransformControls } from '../../node_modules/three-full/sources/controls/TransformControls';
-import { OrbitControls } from '../../node_modules/three-full/sources/controls/OrbitControls';
+import 'three/examples/js/controls/OrbitControls';
+import 'three/examples/js/controls/TransformControls';
+import * as Detector from 'three/examples/js/Detector';
 import { EventsControls } from './EventControls';
 import { rgba2hex } from './utilities';
 import * as Stats from 'stats-js';
@@ -252,7 +253,6 @@ export class ModelRenderer {
         this.scene = new THREE.Scene();
 
         if (options.helpers.drawGridHelpers) {
-            // TODO: when loading AWD files, the grid helper is seriously broken.
             this.scene.add(new THREE.GridHelper(30, 10));
         }
         this.initializeLights(options);
@@ -404,7 +404,7 @@ export class ModelRenderer {
      */
     initializeOrbitControls(options: RendererOptions) {
         // add the orbit controls
-        this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.orbitControls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
         // enable of disable the camera controls
         this.orbitControls.enableZoom = options.controls.cameraControls;
         this.orbitControls.enableKeys = options.controls.cameraControls;
@@ -422,7 +422,7 @@ export class ModelRenderer {
      * Initializes the transform controls on this renderer
      */
     initializeTransformControls() {
-        this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
+        this.transformControls = new THREE.TransformControls(this.camera, this.renderer.domElement);
         // TODO: should not add stuff on window
         window.addEventListener('keydown', (event) => {
             switch (event.keyCode) {
@@ -552,7 +552,7 @@ export class ModelRenderer {
      * @param texturePath Path to the textures of the model, or other dependencies. Will be inferred from the modelUrl if not provided.
      * @param addToScene If you want to also add the model to the scene, or just load and return it.
      */
-    async loadModel(modelUrl: string, modelType = "Auto-Detect", texturePath?: string, addToScene = true) : Promise<THREE.Object3D> {
+    async loadModel(modelUrl: string, modelType = "Auto-Detect", texturePath?: string, addToScene = true): Promise<THREE.Object3D> {
         // try to optain the model type
         modelType = (!modelType || modelType == "Auto-Detect") ? modelUrl.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
         // handle the texture path. If it's set, then use it. If not, get it from the modelUrl

@@ -32,12 +32,12 @@ export class DefaultLoader extends ModelLoader {
 
 export class MfLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/3MFLoader');
+        await import('three/examples/js/loaders/3MFLoader');
         // also put JSZip on window as it's required
         let jszipLoader = await import('jszip');
         window["JSZip"] = jszipLoader.default;
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.ThreeMFLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.ThreeMFLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -46,9 +46,9 @@ export class MfLoader extends ModelLoader {
 
 export class TdsLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/TDSLoader');
+        await import('three/examples/js/loaders/TDSLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.TDSLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.TDSLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -57,9 +57,9 @@ export class TdsLoader extends ModelLoader {
 
 export class AmfLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/AMFLoader');
+        await import('three/examples/js/loaders/AMFLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.AMFLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.AMFLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -68,9 +68,9 @@ export class AmfLoader extends ModelLoader {
 
 export class AssimpJsonLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/AssimpJSONLoader');
+        await import('three/examples/js/loaders/AssimpJSONLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.AssimpJSONLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.AssimpJSONLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -79,10 +79,10 @@ export class AssimpJsonLoader extends ModelLoader {
 
 export class AssimpLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/AssimpLoader');
+        await import('three/examples/js/loaders/AssimpLoader');
         return new Promise<THREE.Object3D>((resolve) => {
             // TODO: this can have animations
-            new loader.AssimpLoader().load(this.url, (model: THREE.Object3D) => {
+            new THREE.AssimpLoader().load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -91,9 +91,9 @@ export class AssimpLoader extends ModelLoader {
 
 export class AwdLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/AWDLoader');
+        await import('three/examples/js/loaders/AWDLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.AWDLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.AWDLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -102,9 +102,9 @@ export class AwdLoader extends ModelLoader {
 
 export class BabylonLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/BabylonLoader');
+        await import('three/examples/js/loaders/BabylonLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.BabylonLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.BabylonLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -113,9 +113,9 @@ export class BabylonLoader extends ModelLoader {
 
 export class GCodeLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/GCodeLoader');
+        await import('three/examples/js/loaders/GCodeLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.GCodeLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.GCodeLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -124,10 +124,10 @@ export class GCodeLoader extends ModelLoader {
 
 export class ColladaLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/ColladaLoader');
+        await import('three/examples/js/loaders/ColladaLoader');
         return new Promise<THREE.Object3D>((resolve) => {
             // TODO: this can have animations
-            new loader.ColladaLoader(this.loadingManager).load(this.url, (data) => {
+            new THREE.ColladaLoader(this.loadingManager).load(this.url, (data) => {
                 resolve(data.scene);
             })
         });
@@ -136,9 +136,9 @@ export class ColladaLoader extends ModelLoader {
 
 export class FbxLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/FBXLoader');
+        await import('three/examples/js/loaders/FBXLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.FBXLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
+            new THREE.FBXLoader(this.loadingManager).load(this.url, (model: THREE.Object3D) => {
                 resolve(model);
             })
         });
@@ -147,9 +147,9 @@ export class FbxLoader extends ModelLoader {
 
 export class GltfLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/GLTFLoader');
+        await import('three/examples/js/loaders/GLTFLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.GLTFLoader(this.loadingManager).load(this.url, (data) => {
+            new THREE.GLTFLoader(this.loadingManager).load(this.url, (data) => {
                 resolve(data.scene);
             })
         });
@@ -158,9 +158,9 @@ export class GltfLoader extends ModelLoader {
 
 export class LegacyGltfLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/deprecated/LegacyGLTFLoader');
+        await import('three/examples/js/loaders/deprecated/LegacyGLTFLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.LegacyGLTFLoader(this.loadingManager).load(this.url, (data) => {
+            new THREE.LegacyGLTFLoader(this.loadingManager).load(this.url, (data) => {
                 resolve(data.scene);
             })
         });
@@ -169,9 +169,9 @@ export class LegacyGltfLoader extends ModelLoader {
 
 export class KmzLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/KMZLoader');
+        await import('three/examples/js/loaders/KMZLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.KMZLoader(this.loadingManager).load(this.url, (data) => {
+            new THREE.KMZLoader(this.loadingManager).load(this.url, (data) => {
                 resolve(data.scene);
             })
         });
@@ -180,9 +180,9 @@ export class KmzLoader extends ModelLoader {
 
 export class Md2Loader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/MD2Loader');
+        await import('three/examples/js/loaders/MD2Loader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.MD2Loader(this.loadingManager).load(this.url, (data: THREE.Geometry) => {
+            new THREE.MD2Loader(this.loadingManager).load(this.url, (data: THREE.Geometry) => {
                 let material = new THREE.MeshStandardMaterial({
                     morphTargets: true,
                     morphNormals: true
@@ -198,14 +198,14 @@ export class Md2Loader extends ModelLoader {
 
 export class ObjLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let objLoader = await import('../../node_modules/three-full/sources/loaders/OBJLoader');
-        let mtlLoader = await import('../../node_modules/three-full/sources/loaders/MTLLoader');
+        await import('three/examples/js/loaders/OBJLoader');
+        await import('three/examples/js/loaders/MTLLoader');
         let mtlPath;
         if (/.*\/(.*)\..*/.exec(this.url).length > 0) {
             mtlPath = /.*\/(.*)\..*/.exec(this.url)[1] + ".mtl";
         }
-        let materialLoader = new mtlLoader.MTLLoader();
-        let objectLoader = new objLoader.OBJLoader(this.loadingManager);
+        let materialLoader = new THREE.MTLLoader();
+        let objectLoader = new THREE.OBJLoader(this.loadingManager);
         materialLoader.setPath(this.texturePath);
         let materialPromise = new Promise((resolve, reject) => {
             materialLoader.load(mtlPath, function (materials) {
@@ -233,9 +233,9 @@ export class ObjLoader extends ModelLoader {
 
 export class PlayCanvasLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/PlayCanvasLoader');
+        await import('three/examples/js/loaders/PlayCanvasLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.PlayCanvasLoader(this.loadingManager).load(this.url, (object) => {
+            new THREE.PlayCanvasLoader(this.loadingManager).load(this.url, (object) => {
                 resolve(object);
             })
         });
@@ -244,9 +244,9 @@ export class PlayCanvasLoader extends ModelLoader {
 
 export class PlyLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/PLYLoader');
+        await import('three/examples/js/loaders/PLYLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.PLYLoader(this.loadingManager).load(this.url, (geometry) => {
+            new THREE.PLYLoader(this.loadingManager).load(this.url, (geometry) => {
                 resolve(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial()));
             })
         });
@@ -255,9 +255,9 @@ export class PlyLoader extends ModelLoader {
 
 export class PrwmLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/PRWMLoader');
+        await import('three/examples/js/loaders/PRWMLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.PRWMLoader(this.loadingManager).load(this.url, (geometry) => {
+            new THREE.PRWMLoader(this.loadingManager).load(this.url, (geometry) => {
                 let mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({}));
                 resolve(mesh);
             })
@@ -308,9 +308,9 @@ export class CreoViewLoader extends ModelLoader {
 
 export class StlLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/STLLoader');
+        await import('three/examples/js/loaders/STLLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.STLLoader(this.loadingManager).load(this.url, (geometry) => {
+            new THREE.STLLoader(this.loadingManager).load(this.url, (geometry) => {
                 let material;
                 if (geometry.hasColors) {
                     material = new THREE.MeshPhongMaterial({
@@ -329,9 +329,9 @@ export class StlLoader extends ModelLoader {
 
 export class VtkLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/VTKLoader');
+        await import('three/examples/js/loaders/VTKLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.VTKLoader(this.loadingManager).load(this.url, (geometry) => {
+            new THREE.VTKLoader(this.loadingManager).load(this.url, (geometry) => {
                 let mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({}));
                 resolve(mesh);
             })
@@ -342,9 +342,9 @@ export class VtkLoader extends ModelLoader {
 export class VrmlLoader extends ModelLoader {
     // TODO: does not work as this gets lost
     public async load(): Promise<THREE.Object3D> {
-        let loader = await import('../../node_modules/three-full/sources/loaders/VRMLLoader');
+        await import('three/examples/js/loaders/VRMLLoader');
         return new Promise<THREE.Object3D>((resolve) => {
-            new loader.VRMLLoader(this.loadingManager).load(this.url, (model) => {
+            new THREE.VRMLLoader(this.loadingManager).load(this.url, (model) => {
                 resolve(model);
             })
         });

@@ -13,8 +13,8 @@ class ThreeModelViewer extends TWRuntimeWidget {
             case "Rotation X":
             case "Rotation Y":
             case "Rotation Z":
-                this.modelRenderer.applyPositionChanges(this.widgetPositionPropertiesToOptions());                
-                break;        
+                this.modelRenderer.applyPositionChanges(this.widgetPositionPropertiesToOptions());
+                break;
             default:
                 break;
         }
@@ -35,15 +35,15 @@ class ThreeModelViewer extends TWRuntimeWidget {
 
     async afterRender(): Promise<void> {
         require("./styles/ThreeModelViewer.runtime.css");
-        let renderer = await import('./three_renderer/ModelRenderer');
-        // also put THREE on window as it's required
+        // put THREE on window as it's required for the rest of the js in examples
         let threeLoader = await import('three');
         window["THREE"] = threeLoader;
+        let renderer = await import('./three_renderer/ModelRenderer');
         this.modelRenderer = new renderer.ModelRenderer(this.jqElement[0], this.widgetPropertiesToOptions());
         this.modelRenderer.applyPositionChanges(this.widgetPositionPropertiesToOptions());
         this.modelRenderer.render();
         // load the initial model, if set
-        if(this.getProperty("modelUrl")) {
+        if (this.getProperty("modelUrl")) {
             this.modelUrl = this.getProperty("modelUrl");
         }
     }
@@ -95,7 +95,7 @@ class ThreeModelViewer extends TWRuntimeWidget {
         return {
             modelYOffset: this.getProperty("ModelYOffset"),
             rotationX: this.getProperty("Rotation Y"), // this are swapped for historical reasons
-            rotationY: this.getProperty("Rotation X"), 
+            rotationY: this.getProperty("Rotation X"),
             rotationZ: this.getProperty("Rotation Z"),
             quaternion: this.getProperty("Quaternion")
         }
@@ -122,7 +122,7 @@ class ThreeModelViewer extends TWRuntimeWidget {
         throw new Error("Method not implemented.");
     }
     beforeDestroy?(): void {
-        if(this.modelRenderer) {
+        if (this.modelRenderer) {
             this.modelRenderer.stopRendering();
         }
     }
