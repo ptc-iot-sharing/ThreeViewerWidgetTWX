@@ -2,7 +2,6 @@
 
 import { TWProperty, TWService, ThingworxRuntimeWidget } from './support/widgetRuntimeSupport';
 import { ModelRenderer, RendererOptions, PositionOptions } from './three_renderer/ModelRenderer';
-import { QuadraticBezierCurve } from 'three';
 
 @ThingworxRuntimeWidget
 class ThreeModelViewer extends TWRuntimeWidget {
@@ -37,6 +36,9 @@ class ThreeModelViewer extends TWRuntimeWidget {
     async afterRender(): Promise<void> {
         require("./styles/ThreeModelViewer.runtime.css");
         let renderer = await import('./three_renderer/ModelRenderer');
+        // also put THREE on window as it's required
+        let threeLoader = await import('three');
+        window["THREE"] = threeLoader;
         this.modelRenderer = new renderer.ModelRenderer(this.jqElement[0], this.widgetPropertiesToOptions());
         this.modelRenderer.applyPositionChanges(this.widgetPositionPropertiesToOptions());
         this.modelRenderer.render();
