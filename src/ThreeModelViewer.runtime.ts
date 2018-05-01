@@ -4,7 +4,7 @@ import { TWProperty, TWService, ThingworxRuntimeWidget } from './support/widgetR
 import { ModelRenderer, RendererOptions, PositionOptions } from './three_renderer/ModelRenderer';
 
 @ThingworxRuntimeWidget
-class ThreeModelViewer extends TWRuntimeWidget {
+export class ThreeModelViewer extends TWRuntimeWidget {
     updateProperty(info: TWUpdatePropertyInfo): void {
         this.setProperty(info.TargetProperty, info.SinglePropertyValue);
         switch (info.TargetProperty) {

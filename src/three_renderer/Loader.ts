@@ -6,7 +6,7 @@
 
 import * as THREE from 'three';
 
-abstract class ModelLoader {
+export abstract class ModelLoader {
     protected url: string;
     protected texturePath: string;
     protected loadingManager: THREE.LoadingManager;
@@ -351,7 +351,7 @@ export class VrmlLoader extends ModelLoader {
     }
 }
 
-interface ModelLoaderConstructor {
+export interface ModelLoaderConstructor {
     new(url: string, texturePath: string, loadingManager: THREE.LoadingManager): ModelLoader;
 }
 

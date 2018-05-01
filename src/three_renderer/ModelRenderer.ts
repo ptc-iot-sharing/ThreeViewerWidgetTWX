@@ -17,7 +17,7 @@ import { ModelLoaderFactory } from './Loader'
 /**
  * List of rotation axis for the model
  */
-enum Axis {
+export enum Axis {
     X = "x", Y = "y", Z = "z"
 }
 export interface RendererOptions {
