@@ -544,7 +544,15 @@ export class ModelRenderer {
         window.cancelAnimationFrame(this.frameRequest);
     }
 
-    async loadModel(modelUrl: string, modelType: string, texturePath: string) {
+    /**
+     * Loads a speciefied model at the given url and returns the THREE.Object3D. Can also load the file into the scene if requested.
+     * 
+     * @param modelUrl Path to the model to be loaded.
+     * @param modelType Model type to be used. See ModelLoaderFactory in Loader.ts for more info. Will be infered from the modelUrl if not provided
+     * @param texturePath Path to the textures of the model, or other dependencies. Will be inferred from the modelUrl if not provided.
+     * @param addToScene If you want to also add the model to the scene, or just load and return it.
+     */
+    async loadModel(modelUrl: string, modelType = "Auto-Detect", texturePath?: string, addToScene = true) : Promise<THREE.Object3D> {
         // try to optain the model type
         modelType = (!modelType || modelType == "Auto-Detect") ? modelUrl.split('.').pop().split(/\#|\?/)[0].toLowerCase() : modelType;
         // handle the texture path. If it's set, then use it. If not, get it from the modelUrl
@@ -552,11 +560,16 @@ export class ModelRenderer {
         let loaderBuilder = ModelLoaderFactory.getLoader(modelType);
         let loader = new loaderBuilder(modelUrl, texturePath, this.loadingManager);
         let object = await loader.load();
-        if (object.type == "Scene") {
-            this.setSceneCommand(<THREE.Scene>object);
-        } else {
-            this.addObject3dToScene(object);
+        if (addToScene) {
+            if (object.type == "Scene") {
+                this.setSceneCommand(<THREE.Scene>object);
+            } else {
+                this.addObject3dToScene(object);
+            }
         }
+        return new Promise<THREE.Object3D>((resolve) => {
+            resolve(object);
+        })
     }
 
     setSceneCommand(sceneObject: THREE.Scene) {
@@ -592,7 +605,9 @@ export class ModelRenderer {
     addObject3dToScene(model: THREE.Object3D) {
         if (!this.scene["isModelViewerDefaultScene"] || this.options.misc.resetSceneOnModelChange) {
             this.initializeScene(this.options);
-            this.eventControls.objects = [];
+            if (this.eventControls) {
+                this.eventControls.objects = [];
+            }
         }
         // TODO: if we have a callback set, then add it to the list
         /*if (renderCallback) {

@@ -30,7 +30,7 @@ class ThreeModelViewer extends TWRuntimeWidget {
 
     @TWProperty("ModelUrl")
     set modelUrl(value: string) {
-        this.modelRenderer.loadModel(value, this.getProperty("ModelType"), this.getProperty("TexturePath"));
+        this.modelRenderer.loadModel(value, this.getProperty("ModelType"), this.getProperty("TexturePath"), true);
     };
 
     async afterRender(): Promise<void> {
