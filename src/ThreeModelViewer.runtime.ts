@@ -33,6 +33,14 @@ export class ThreeModelViewer extends TWRuntimeWidget {
         this.modelRenderer.loadModel(value, this.getProperty("ModelType"), this.getProperty("TexturePath"), true);
     };
 
+    private afterRenderResolve: (() => void);
+
+    /**
+     * Promise that resolves one the widget has been fully initialized 
+     * and THREE has been exported on window
+     */
+    afterRendered = new Promise($0 => this.afterRenderResolve = $0);
+
     async afterRender(): Promise<void> {
         require("./styles/ThreeModelViewer.runtime.css");
         // put THREE on window as it's required for the rest of the js in examples
@@ -46,6 +54,7 @@ export class ThreeModelViewer extends TWRuntimeWidget {
         if (this.getProperty("modelUrl")) {
             this.modelUrl = this.getProperty("modelUrl");
         }
+        this.afterRenderResolve();
     }
 
     widgetPropertiesToOptions(): RendererOptions {
@@ -93,10 +102,10 @@ export class ThreeModelViewer extends TWRuntimeWidget {
 
     widgetPositionPropertiesToOptions(): PositionOptions {
         return {
-            modelYOffset: this.getProperty("ModelYOffset"),
-            rotationX: this.getProperty("Rotation Y"), // this are swapped for historical reasons
-            rotationY: this.getProperty("Rotation X"),
-            rotationZ: this.getProperty("Rotation Z"),
+            modelYOffset: parseFloat(this.getProperty("ModelYOffset")),
+            rotationX: parseFloat(this.getProperty("Rotation Y")), // this are swapped for historical reasons
+            rotationY: parseFloat(this.getProperty("Rotation X")),
+            rotationZ: parseFloat(this.getProperty("Rotation Z")),
             quaternion: this.getProperty("Quaternion")
         }
     }
