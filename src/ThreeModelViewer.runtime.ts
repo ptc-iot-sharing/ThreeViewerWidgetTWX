@@ -51,8 +51,8 @@ export class ThreeModelViewer extends TWRuntimeWidget {
         this.modelRenderer.applyPositionChanges(this.widgetPositionPropertiesToOptions());
         this.modelRenderer.render();
         // load the initial model, if set
-        if (this.getProperty("modelUrl")) {
-            this.modelUrl = this.getProperty("modelUrl");
+        if (this.getProperty("ModelUrl")) {
+            this.modelUrl = this.getProperty("ModelUrl");
         }
         this.afterRenderResolve();
     }
