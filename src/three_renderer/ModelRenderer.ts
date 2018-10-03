@@ -693,7 +693,7 @@ export class ModelRenderer {
                 this.applyRotationOnAxis(options.rotationX, Axis.X, true);
             }
             if (options.rotationY != this.positionOptions.rotationY) {
-                this.applyRotationOnAxis(options.rotationZ, Axis.Y, true);
+                this.applyRotationOnAxis(options.rotationY, Axis.Y, true);
             }
             if (options.rotationZ != this.positionOptions.rotationZ) {
                 this.applyRotationOnAxis(options.rotationZ, Axis.Z, true);
