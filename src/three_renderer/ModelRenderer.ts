@@ -13,6 +13,7 @@ import { EventsControls } from './EventControls';
 import { rgba2hex } from './utilities';
 import * as Stats from 'stats-js';
 import { ModelLoaderFactory } from './Loader'
+import { Renderer } from 'three';
 
 // declare this here for no errors
 declare const WEBGL: any;
@@ -23,6 +24,8 @@ declare const WEBGL: any;
 export enum Axis {
     X = "x", Y = "y", Z = "z"
 }
+export type RendererCallback = (scene: THREE.Scene, camera: THREE.Camera) => void;
+
 export interface RendererOptions {
     helpers: {
         /**
@@ -183,6 +186,8 @@ export class ModelRenderer {
      * Current frame request for the renderer
      */
     private frameRequest: number;
+
+    private renderCallbacks: RendererCallback[] = [];
 
     /**
      * Main function that initializes all the objects in the renderer.
@@ -505,6 +510,20 @@ export class ModelRenderer {
     }
 
     /**
+     * Adds a new callback that is executed in the render loop
+     */
+    public addRenderCallback(callback: RendererCallback) {
+        this.renderCallbacks.push(callback);
+    }
+
+    /**
+     * Removes a that is executed in the render loop
+     */
+    public removeRenderCallback(callback: RendererCallback) {
+        this.renderCallbacks.splice(this.renderCallbacks.indexOf(callback), 1);
+    }
+
+    /**
      * Starts the render loop
      */
     public render = () => {
@@ -518,13 +537,12 @@ export class ModelRenderer {
         //}
         TWEEN.update();
         this.orbitControls.update();
-        // TODO: handle renderer callbacks
         // call each callback that came from the model
-        /*for (var i = 0; i < renderCallbacks.length; i++) {
-            renderCallbacks[i](scene, camera);
-        }*/
+        for (const callback of this.renderCallbacks) {
+            callback(this.scene, this.camera);
+        }
         this.renderer.render(this.scene, this.camera);
-        // also render the insets if they were initialzed 
+        // also render the insets if they were initialzed
         if (this.insetCamera && this.insetRenderer) {
             this.renderAxesHelpers();
         }
@@ -713,7 +731,6 @@ export class ModelRenderer {
      */
     applyRotationOnAxis(rotation: number, axis: Axis, smooth: boolean) {
         let angle = THREE.Math.degToRad(rotation);
-        THREE.Math.degToRad
         if (smooth) {
             let tweenName = "rot" + axis.toUpperCase();
             if (this.tweens[tweenName]) {
