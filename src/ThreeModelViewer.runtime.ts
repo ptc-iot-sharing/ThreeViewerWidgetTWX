@@ -59,7 +59,7 @@ export class ThreeModelViewer extends TWRuntimeWidget {
 
     widgetPropertiesToOptions(): RendererOptions {
         let backgroundStyle = TW.getStyleFromStyleDefinition(this.getProperty('BackgroundStyle', ''));
-        let backgroundColor = backgroundStyle.backgroundColor ? backgroundStyle.backgroundColor : "rgba(222,224,225,0.3)";
+        let backgroundColor = backgroundStyle.backgroundColor ? backgroundStyle.backgroundColor : "rgba(255,255,255,0)";
 
         return {
             controls: {
