@@ -8,11 +8,14 @@ import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
 import 'three/examples/js/controls/OrbitControls';
 import 'three/examples/js/controls/TransformControls';
-import * as Detector from 'three/examples/js/Detector';
+import "script-loader!three/examples/js/WebGL";
 import { EventsControls } from './EventControls';
 import { rgba2hex } from './utilities';
 import * as Stats from 'stats-js';
 import { ModelLoaderFactory } from './Loader'
+
+// declare this here for no errors
+declare const WEBGL: any;
 
 /**
  * List of rotation axis for the model
@@ -189,9 +192,9 @@ export class ModelRenderer {
      */
     public constructor(parent: Element, options: RendererOptions) {
         this.options = options;
-        // verify if webgl is supported. 
-        if (!Detector.webgl) {
-            Detector.addGetWebGLMessage({ parent: parent });
+        // verify if webgl is supported.
+        if (!WEBGL.isWebGLAvailable()) {
+            parent.appendChild(WEBGL.getWebGLErrorMessage());
             throw "WebGL is not supported. Nothing will happen next."
         }
 
