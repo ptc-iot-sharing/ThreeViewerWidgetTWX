@@ -48,12 +48,16 @@ module.exports = function (env, argv) {
             new CleanWebpackPlugin(['build', 'zip']),
             // in case we just want to copy some resources directly to the widget package, then do it here
             new CopyWebpackPlugin([{ from: 'src/static', to: 'static' }]),
+            new CopyWebpackPlugin([{ from: 'node_modules/three/examples/js/libs/draco/gltf', to: 'static/draco' }]),
             // generates the metadata xml file and adds it to the archive
             new WidgetMetadataGenerator(),
             new DeclarationBundlerPlugin({
                 moduleName:`${packageJson.name}`,
                 out: path.join('typings', `${packageJson.name}.d.ts`),
                 excludePattern: new RegExp(`${packageJson.name}\.ide\.d\.ts`)
+            }),
+            new webpack.DefinePlugin({
+                'WIDGET_PATH_URL': JSON.stringify(`../Common/extensions/${packageName}/ui/${packageJson.name}/`)
             }),
             // create the extension zip
             new ZipPlugin({

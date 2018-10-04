@@ -5,6 +5,7 @@
  */
 
 import * as THREE from 'three';
+declare const WIDGET_PATH_URL: string;
 
 export abstract class ModelLoader {
     protected url: string;
@@ -148,8 +149,12 @@ export class FbxLoader extends ModelLoader {
 export class GltfLoader extends ModelLoader {
     public async load(): Promise<THREE.Object3D> {
         await import('three/examples/js/loaders/GLTFLoader');
+        await import('three/examples/js/loaders/DRACOLoader');
+        THREE.DRACOLoader.setDecoderPath(WIDGET_PATH_URL + 'static/draco/');
         return new Promise<THREE.Object3D>((resolve) => {
-            new THREE.GLTFLoader(this.loadingManager).load(this.url, (data) => {
+            const loader = new THREE.GLTFLoader(this.loadingManager);
+            loader.setDRACOLoader( new THREE.DRACOLoader() );
+            loader.load(this.url, (data) => {
                 resolve(data.scene);
             })
         });

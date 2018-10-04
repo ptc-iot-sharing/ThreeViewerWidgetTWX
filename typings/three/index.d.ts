@@ -19,7 +19,9 @@ declare module "THREE" {
     export class GCodeLoader extends AbstractLoader { }
     export class ColladaLoader extends AbstractLoader { }
     export class FBXLoader extends AbstractLoader { }
-    export class GLTFLoader extends AbstractLoader { }
+    export class GLTFLoader extends AbstractLoader {
+        setDRACOLoader(loader: DRACOLoader);
+    }
     export class LegacyGLTFLoader extends AbstractLoader { }
     export class KMZLoader extends AbstractLoader { }
     export class MD2Loader extends AbstractLoader { }
@@ -28,5 +30,7 @@ declare module "THREE" {
     export class PRWMLoader extends AbstractLoader { }
     export class VTKLoader extends AbstractLoader { }
     export class VRMLLoader extends AbstractLoader { }
-
+    export class DRACOLoader extends AbstractLoader {
+        static setDecoderPath(path: string);
+    }
 }
