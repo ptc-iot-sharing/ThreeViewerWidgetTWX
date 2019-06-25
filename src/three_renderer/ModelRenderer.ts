@@ -695,7 +695,7 @@ export class ModelRenderer {
      * @param options New position and rotation data
      */
     applyPositionChanges(options: PositionOptions) {
-        if (options.modelYOffset != this.positionOptions.modelYOffset) {
+        if (!isNaN(options.modelYOffset) && !isNaN(this.positionOptions.modelYOffset) && options.modelYOffset != this.positionOptions.modelYOffset) {
             this.pivot.position.y = options.modelYOffset;
         }
 
@@ -741,7 +741,7 @@ export class ModelRenderer {
             this.tweens[tweenName] = new TWEEN.Tween(this.pivot.rotation).to(animationInfo,
                 this.options.misc.tweenInterval).easing(TWEEN.Easing.Quadratic.Out).start();
         } else {
-            this.pivot.rotation[axis] = rotation;
+            this.pivot.rotation[axis] = angle;
         }
     }
 }
