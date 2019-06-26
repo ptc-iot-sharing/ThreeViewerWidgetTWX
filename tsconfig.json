@@ -5,17 +5,14 @@
         "noImplicitAny": false,
         "module": "esnext",
         "moduleResolution": "node",
+        "downlevelIteration": true,
         "target": "es5",
-        "declaration": true,
         "experimentalDecorators": true,
         "lib": [
             "es2015",
-            "dom"
+            "dom",
+            "dom.iterable"
         ],
-        "typeRoots": [
-            "./typings/",
-            "./node_modules/@types/"
-        ]
     },
     "include": [
         "./src/*"

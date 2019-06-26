@@ -1,5 +1,5 @@
 // automatically import the css file
-import { ThingworxComposerWidget } from './support/widgetRuntimeSupport'
+import { ThingworxComposerWidget } from 'typescriptwebpacksupport';
 
 @ThingworxComposerWidget
 class ThreeModelViewer extends TWComposerWidget {
@@ -318,7 +318,7 @@ class ThreeModelViewer extends TWComposerWidget {
     beforeDestroy(): void {
     }
 
-    getSourceDatashape(propertyName): Dictionary<TWFieldDefinition> {
+    getSourceDatashape(propertyName): any {
         switch (propertyName) {
             case "SceneTree":
                 return {
