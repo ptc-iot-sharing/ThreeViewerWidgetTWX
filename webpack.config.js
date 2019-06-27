@@ -7,7 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const EncodingPlugin = require('webpack-encoding-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // enable cleaning of the build and zip directories
-const CleanWebpackPlugin = require('clean-webpack-plugin').default;
+const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 // enable building of the widget
 const ZipPlugin = require('zip-webpack-plugin');
 // enable reading master data from the package.json file

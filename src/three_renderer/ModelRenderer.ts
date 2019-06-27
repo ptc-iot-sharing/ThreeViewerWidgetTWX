@@ -6,8 +6,8 @@
 import * as THREE from 'three';
 
 import * as TWEEN from '@tweenjs/tween.js';
-import 'three/examples/js/controls/OrbitControls';
-import 'three/examples/js/controls/TransformControls';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {TransformControls} from 'three/examples/jsm/controls/TransformControls';
 import "script-loader!three/examples/js/WebGL";
 import { EventsControls } from './EventControls';
 import { rgba2hex } from './utilities';
@@ -144,12 +144,12 @@ export class ModelRenderer {
     /**
      * Orbit conrols for controlling the camera
      */
-    public orbitControls: THREE.OrbitControls;
+    public orbitControls: OrbitControls;
 
     /**
      * Transform controls for controlling the transforming elements
      */
-    public transformControls: THREE.TransformControls;
+    public transformControls: TransformControls;
 
     /**
      * Controls for part selection
@@ -211,8 +211,8 @@ export class ModelRenderer {
             antialias: true,
             canvas: canvas,
             alpha: true,
-            devicePixelRatio: window.devicePixelRatio
         });
+        this.renderer.setPixelRatio(window.devicePixelRatio);
         // create a camera 
         this.camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
 
@@ -412,7 +412,7 @@ export class ModelRenderer {
      */
     initializeOrbitControls(options: RendererOptions) {
         // add the orbit controls
-        this.orbitControls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
         // enable of disable the camera controls
         this.orbitControls.enableZoom = options.controls.cameraControls;
         this.orbitControls.enableKeys = options.controls.cameraControls;
@@ -430,7 +430,7 @@ export class ModelRenderer {
      * Initializes the transform controls on this renderer
      */
     initializeTransformControls() {
-        this.transformControls = new THREE.TransformControls(this.camera, this.renderer.domElement);
+        this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
         // TODO: should not add stuff on window
         window.addEventListener('keydown', (event) => {
             switch (event.keyCode) {
@@ -438,7 +438,9 @@ export class ModelRenderer {
                     this.transformControls.setSpace(this.transformControls.space === "local" ? "world" : "local");
                     break;
                 case 17: // Ctrl
+                    //@ts-ignore
                     this.transformControls.setTranslationSnap(100);
+                    //@ts-ignore
                     this.transformControls.setRotationSnap(THREE.Math.degToRad(15));
                     break;
                 case 87: // W
