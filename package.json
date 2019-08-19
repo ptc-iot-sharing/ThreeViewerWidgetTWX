@@ -2,18 +2,18 @@
     "name": "ThreeModelViewer",
     "version": "1.5.0",
     "description": "Three.JS model viewer for thingworx",
-    "thingworxServer": "http://dzanfir1l1:8075",
+    "thingworxServer": "http://localhost:8075",
     "thingworxUser": "Administrator",
     "thingworxPassword": "Administrator",
-    "author": "Thingworx RoIcenter",
+    "author": "Thingworx RoIcenter placatus",
     "minimumThingWorxVersion": "6.0.0",
-    "homepage": "http://roicentersvn/placatus/ThreeModelViewer",
+    "homepage": "https://github.com/ptc-iot-sharing//ThreeViewerWidgetTWX",
     "autoUpdate": {
-        "giteaURL": "http://roicentersvn/api/v1/repos/placatus/ThreeModelViewer/releases/latest"
+        "gitHubURL": "https://api.github.com/repos/ptc-iot-sharing/ThreeViewerWidgetTWX/releases/latest"
     },
     "repository": {
         "type": "git",
-        "url": "http://roicentersvn.ptcnet.ptc.com/placatus/ThreeModelViewer.git"
+        "url": "https://github.com/ptc-iot-sharing//ThreeViewerWidgetTWX.git"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
