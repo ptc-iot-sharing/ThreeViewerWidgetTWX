@@ -13,3 +13,5 @@ The ThreeModelViewer widget is based on [three.js](http://threejs.org/) and is c
 ### Developing
 
 You can easily change what happens when a model is loaded. By default, it is either added to the scene *this.addObjectCommand* or it is a scene so it's just rendered *this.setSceneCommand*. So you can pass a callback to the Loader.loadFile that specifies what is happened after the file is loaded.
+
+#This Extension is provided as-is and without warranty or support. It is not part of the PTC product suite. This project is licensed under the terms of the MIT license
