@@ -55,7 +55,7 @@
     },
     "dependencies": {
         "@tweenjs/tween.js": "^17.4.0",
-        "jszip": "^2.6.1",
+        "jszip": "^3.8.0",
         "stats-js": "^1.0.1",
         "three": "^0.106.2",
         "typescriptwebpacksupport": "^1.1.0"
